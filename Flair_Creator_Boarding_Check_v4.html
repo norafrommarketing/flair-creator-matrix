@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>Flair Creator Boarding Check</title>
+<style>
+  :root{
+    --black:#212529;
+    --green:#ADF979;
+    --cool:#606065;
+    --paper:#FFFFFF;
+    --soft:#F5F6EF;
+    --line:#D9DDD6;
+    --red:#D94545;
+    --mint:#F1F8E9;
+    --pale:#FAFBF7;
+    --edge:#AEB5AE;
+    --amber:#F2C14E;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:#eceee9;
+    color:var(--black);
+    font-family:Averta, Arial, Helvetica, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  button, input, select, textarea{font:inherit;color:inherit}
+  button{cursor:pointer}
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{
+    outline:3px solid var(--green);
+    outline-offset:2px;
+  }
+  .sheet{
+    width:min(1220px, 100%);
+    margin:0 auto;
+    background:var(--paper);
+    min-height:100vh;
+    box-shadow:0 18px 70px rgba(0,0,0,.12);
+  }
+
+  /* Header */
+  header{
+    background:var(--black);
+    color:#fff;
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:24px;
+    align-items:center;
+    padding:30px 38px;
+  }
+  h1{margin:0;color:#fff;font-size:34px;line-height:1;font-weight:900;text-transform:uppercase}
+  .subtitle{margin:8px 0 0;color:var(--green);font-size:20px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}
+  .tag{font-weight:900;text-transform:uppercase;font-size:18px;line-height:1.05;text-align:right}
+  .tag span{color:var(--green);display:block}
+
+  /* Toolbar */
+  .toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+    padding:14px 34px;
+    border-bottom:1px solid var(--line);
+    background:var(--soft);
+  }
+  .toolbar .spacer{flex:1}
+  .btn{
+    border:1px solid var(--black);
+    border-radius:22px;
+    background:#fff;
+    padding:9px 16px;
+    font-size:13px;
+    font-weight:900;
+    white-space:nowrap;
+  }
+  .btn.primary{background:var(--black);color:#fff}
+  .btn.go{background:var(--green);border-color:var(--green)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn .count{
+    display:inline-grid;place-items:center;
+    min-width:20px;height:20px;padding:0 6px;margin-left:6px;
+    border-radius:999px;background:var(--green);color:var(--black);font-size:11px;
+  }
+
+  /* Layout */
+  main{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;padding:28px 34px 40px}
+  h2{margin:0 0 6px;font-size:18px;text-transform:uppercase}
+  .panel{
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:18px 20px;
+    margin-bottom:14px;
+    background:#fff;
+  }
+  .panel > p{font-size:12.5px;margin:0 0 12px;color:var(--cool)}
+  .field{margin:0 0 14px;min-width:0}
+  .field label{display:block;font-weight:900;font-size:13px;margin-bottom:7px}
+  input[type=text], input[type=number], input[type=date], input[type=search], select, textarea{
+    width:100%;
+    border:1px solid var(--edge);
+    border-radius:4px;
+    padding:10px;
+    background:#fff;
+    min-width:0;
+  }
+  textarea{min-height:110px;resize:vertical}
+  .profile-link{display:inline-block;max-width:100%;margin-top:6px;font-size:12px;font-weight:800;color:#4C9F31;text-decoration:none;overflow-wrap:anywhere}
+  .profile-link:hover{text-decoration:underline}
+  .profile-link[hidden]{display:none}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+
+  /* Score rows */
+  .layout{margin:26px 0 14px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .section{
+    display:grid;
+    grid-template-columns:84px minmax(0,1fr) 260px;
+    column-gap:14px;
+    row-gap:16px;
+    align-items:center;
+    padding:20px;
+    border-top:1px solid var(--line);
+  }
+  .section:first-child{border-top:0}
+  .section .wide{grid-column:2 / -1}
+  .icon{
+    width:70px;height:70px;border-radius:50%;
+    display:grid;place-items:center;
+    background:var(--green);
+    color:var(--black);
+    align-self:start;
+  }
+  .icon svg{width:36px;height:36px;stroke:currentColor;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .risk .icon{background:#D8D8D8}
+  .bonus .icon{background:#E9FFD7}
+  .section h3{margin:0;font-size:21px;text-transform:uppercase;line-height:1.05}
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    margin-left:8px;
+    padding:4px 8px;
+    border:1px solid var(--edge);
+    border-radius:999px;
+    background:var(--mint);
+    font-size:10px;
+    line-height:1;
+    font-weight:900;
+    vertical-align:middle;
+    white-space:nowrap;
+  }
+  .question{font-size:13px;font-weight:800;margin:6px 0 8px}
+  ul{margin:0;padding-left:16px;font-size:12.5px;line-height:1.4}
+
+  .rate{display:grid;gap:6px}
+  .scale{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--edge);border-radius:4px;overflow:hidden}
+  .scale button{
+    height:46px;
+    border:0;
+    border-left:1px solid var(--edge);
+    background:#fff;
+    font-size:18px;
+    font-weight:900;
+  }
+  .scale button:first-child{border-left:0}
+  .scale button:hover{background:var(--mint)}
+  .scale button[aria-pressed=true]{background:var(--green)}
+  .scale-legend{display:flex;justify-content:space-between;font-size:10px;font-weight:900;color:var(--cool);text-transform:uppercase}
+  .row-points{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-size:11px;font-weight:900;color:var(--cool);text-transform:uppercase;
+  }
+  .row-points b{font-size:18px;color:var(--black)}
+
+  .auto-score{
+    border:1px solid var(--edge);
+    border-radius:8px;
+    background:var(--pale);
+    padding:13px 16px;
+    min-height:58px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .auto-score b{font-size:22px;line-height:1;white-space:nowrap}
+  .auto-score span{font-size:11px;color:var(--cool);font-weight:900;text-transform:uppercase}
+
+  /* Segments */
+  .segments{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .seg{
+    text-align:left;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:#fff;
+    padding:12px 14px;
+    display:grid;
+    gap:4px;
+    align-content:start;
+    position:relative;
+  }
+  .seg:hover{border-color:var(--black)}
+  .seg[aria-pressed=true]{background:var(--black);border-color:var(--black);color:#fff}
+  .seg-name{font-size:14px;font-weight:900;line-height:1.15;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  .seg-counts{display:none;font-size:10px;font-weight:900;padding:3px 7px;border-radius:999px;background:var(--green);color:var(--black);white-space:nowrap;text-transform:uppercase}
+  .seg.counts .seg-counts{display:inline-block}
+  .seg-from{font-size:13px;font-weight:900;margin-top:4px;line-height:1.2}
+  .seg-meta{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .seg-age{font-size:12px;font-weight:900;color:var(--cool)}
+  .seg[aria-pressed=true] .seg-age{color:var(--green)}
+  .seg-desc{font-size:11.5px;line-height:1.3;color:var(--cool)}
+  .seg[aria-pressed=true] .seg-desc{color:#D7DAD4}
+  .seg-mult{
+    font-size:10px;font-weight:900;white-space:nowrap;
+    padding:3px 7px;border-radius:999px;
+    background:#E4E6E1;color:var(--black);
+  }
+  .seg-mult.s5{background:var(--green)}
+  .seg-mult.s4{background:#E9FFD7}
+
+  /* Engagement */
+  .platforms{display:grid;grid-template-columns:1fr;gap:12px}
+  .plat{
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px;
+    background:var(--mint);
+    min-width:0;
+  }
+  .plat.ig{background:#fff;border-color:var(--black);box-shadow:inset 0 0 0 1px var(--black)}
+  .plat.tt{background:var(--soft)}
+  .plat-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+  .plat-head b{font-size:15px;text-transform:uppercase}
+  .plat-tag{font-size:10px;font-weight:900;text-transform:uppercase;color:var(--cool)}
+  .tier-badge{font-size:11px;font-weight:900;padding:5px 10px;border-radius:999px;background:#E4E6E1;color:var(--cool);white-space:nowrap}
+  .tier-badge.on{background:var(--black);color:var(--green)}
+  .ig-meta{font-size:12px;color:var(--cool);font-weight:700;margin:0 0 10px;line-height:1.35}
+  .ig-meta b{color:var(--black)}
+  .req{font-weight:800;color:var(--cool);font-size:11px}
+  .band-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:12px}
+  .band{border:1px solid var(--line);border-radius:8px;padding:8px 9px;background:var(--pale);min-width:0}
+  .band b{display:block;font-size:12px;text-transform:uppercase}
+  .band small{display:block;font-size:11px;font-weight:800;color:var(--cool);margin-top:2px}
+  .band.on{box-shadow:inset 0 0 0 2px var(--black)}
+  .band.on.bad{background:#FFE3E3;border-color:var(--red)}
+  .band.on.avg{background:#FFF3D1;border-color:var(--amber)}
+  .band.on.good{background:#E9FFD7;border-color:#7BC94C}
+  .band.on.amazing{background:var(--green);border-color:var(--black)}
+  .errow{display:flex;gap:10px;align-items:center}
+  .errow label{font-weight:900;font-size:13px}
+  .errow input{max-width:100px;text-align:right}
+  .bands{font-size:11px;line-height:1.35;color:var(--cool);margin:10px 0 0}
+  .linkbtn{
+    border:0;
+    background:transparent;
+    color:#4C9F31;
+    font-weight:900;
+    padding:10px 0 0;
+    text-transform:uppercase;
+    font-size:12px;
+  }
+  .calc-panel{margin-top:10px;border-top:1px solid var(--line);padding-top:12px}
+  .calc-panel[hidden]{display:none}
+  .calc-panel p{font-size:11.5px;margin:0 0 10px;color:var(--cool)}
+  .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .calc-grid label{display:block;font-size:11px;font-weight:900;color:var(--cool);margin-bottom:3px}
+  .formula{font-family:"Courier New",monospace;font-size:11px;text-align:center;margin:10px 0;color:var(--cool)}
+  .calc-result{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .calc-result strong{font-size:24px}
+  .usebtn{
+    border:0;border-radius:22px;background:var(--black);color:#fff;
+    padding:9px 14px;font-weight:900;font-size:12px;
+  }
+  .usebtn:disabled{background:#C6CEC2;cursor:not-allowed}
+
+  .group-head{
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    padding:16px 20px;border-top:1px solid var(--line);background:var(--black);color:#fff;
+  }
+  .group-head h3{margin:0;font-size:21px;text-transform:uppercase;color:#fff}
+  .group-head p{margin:4px 0 0;font-size:12.5px;color:#D7DAD4}
+  .group-head .pill{background:var(--green);border-color:var(--green)}
+  .section.pillar{background:#FCFDF9}
+  .pillar-desc{margin:6px 0 0;font-size:12.5px;line-height:1.35;color:var(--cool);font-style:italic}
+  .pnote-label{display:block;font-size:11px;font-weight:900;text-transform:uppercase;color:var(--cool);margin-bottom:5px}
+  /* Bonus */
+  .checks{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+  .checks label{
+    display:flex;align-items:center;gap:9px;
+    min-height:32px;font-size:12px;font-weight:800;line-height:1.2;cursor:pointer;
+  }
+  .checks input{width:18px;height:18px;flex:0 0 18px;accent-color:var(--green)}
+
+  /* Deny */
+  .panel.deny-panel{border-color:#F0C9C9}
+  .deny-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+  .deny-list li{display:flex;gap:10px;align-items:center;min-height:32px;font-size:12px;font-weight:800;line-height:1.2}
+  .deny-list label{display:flex;gap:10px;align-items:center;cursor:pointer}
+  .deny-list input{width:18px;height:18px;accent-color:var(--red);flex:0 0 18px}
+
+  .fineprint{
+    margin:14px 0 0;
+    padding:14px 16px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--pale);
+    font-size:12px;
+    color:var(--cool);
+    line-height:1.45;
+  }
+  .fineprint h2{color:var(--black)}
+  .fineprint p{margin:0 0 4px}
+  .fineprint b{color:var(--black)}
+
+  /* Score box */
+  .side{min-width:0}
+  .sticky{position:sticky;top:18px;display:grid;gap:14px}
+  .scorebox{
+    background:var(--black);
+    color:#fff;
+    border-radius:14px;
+    padding:24px 26px;
+    transition:background .2s;
+  }
+  .scorebox.denied{background:var(--red)}
+  .scorebox h2{color:#fff}
+  .scoreline{font-size:58px;font-weight:900;text-align:right;line-height:1;color:var(--green)}
+  .scorebox.denied .scoreline{color:#fff}
+  .scoreline small{font-size:24px;color:#fff}
+  .bonusline{display:flex;justify-content:flex-end;align-items:baseline;flex-wrap:wrap;gap:4px 12px;margin-top:12px;color:#fff}
+  .bonusline > div{display:flex;align-items:baseline;gap:5px;white-space:nowrap}
+  .bonusline small{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.03em}
+  .bonusline span{font-size:29px;line-height:1;font-weight:900;color:var(--green)}
+  .scorebox.denied .bonusline span{color:#fff}
+  .rule{height:3px;background:var(--green);margin:18px 0 14px}
+  .scorebox.denied .rule{background:#fff}
+  .verdict{
+    border-radius:10px;
+    padding:12px 14px;
+    background:#33383D;
+    font-weight:900;
+  }
+  .verdict .v-label{font-size:20px;text-transform:uppercase;line-height:1.1}
+  .verdict .v-note{font-size:11.5px;font-weight:700;margin-top:4px;color:#D7DAD4;line-height:1.35}
+  .verdict.go{background:var(--green);color:var(--black)}
+  .verdict.go .v-note{color:var(--black)}
+  .verdict.review{background:var(--amber);color:var(--black)}
+  .verdict.review .v-note{color:var(--black)}
+  .verdict.pass{background:#4A4F55}
+  .verdict.deny{background:#fff;color:var(--red)}
+  .verdict.deny .v-note{color:var(--black)}
+  .breakdown{list-style:none;padding:0;margin:14px 0 0;font-size:12px}
+  .breakdown li{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-top:1px solid rgba(255,255,255,.14)}
+  .breakdown li:first-child{border-top:0}
+  .breakdown b{font-weight:900}
+
+  .checklist{
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px 18px;
+    background:#fff;
+  }
+  .checklist h2{font-size:14px}
+  .checklist ul{list-style:none;padding:0;margin:8px 0 0}
+  .checklist li{display:flex;gap:8px;align-items:center;font-size:12.5px;font-weight:800;margin:6px 0}
+  .checklist li::before{content:"";width:12px;height:12px;border-radius:50%;border:2px solid var(--edge);flex:0 0 12px}
+  .checklist .done{font-size:12.5px;font-weight:900;color:#3B7F22;margin:6px 0 0}
+
+  /* Tabs */
+  [data-page][hidden]{display:none !important}
+  .tabs{display:inline-flex;border:1px solid var(--black);border-radius:22px;overflow:hidden;background:#fff}
+  .tab{border:0;background:#fff;padding:9px 18px;font-size:13px;font-weight:900;white-space:nowrap}
+  .tab + .tab{border-left:1px solid var(--black)}
+  .tab[aria-selected=true]{background:var(--black);color:var(--green)}
+  body.on-exchange .score-only{display:none}
+
+  /* Page 2: Value Exchange */
+  .exchange{padding:28px 34px 40px}
+  .x-intro h2{font-size:22px;margin-bottom:2px}
+  .x-sub{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:#4C9F31;margin-bottom:8px}
+  .x-rules li b{color:var(--green)}
+  .x-intro p{margin:0;font-size:13px;line-height:1.45;color:var(--cool);max-width:760px}
+  .x-intro p b{color:var(--black)}
+  .x-banner{margin:16px 0;padding:14px 18px;border-radius:12px;background:var(--soft);border:1px solid var(--line);font-size:13px;line-height:1.4}
+  .x-banner .x-who{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.03em;opacity:.75}
+  .x-banner b{display:block;font-size:18px;text-transform:uppercase;margin:3px 0 2px}
+  .x-banner.go{background:var(--green);border-color:var(--green)}
+  .x-banner.review{background:#FFF3D1;border-color:var(--amber)}
+  .x-banner.pass{background:#4A4F55;border-color:#4A4F55;color:#fff}
+  .x-banner.deny{background:var(--red);border-color:var(--red);color:#fff}
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;-webkit-overflow-scrolling:touch}
+  table.x{width:100%;min-width:860px;border-collapse:collapse;font-size:12.5px}
+  .x th{background:var(--black);color:#fff;text-align:left;padding:11px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+  .x td{padding:13px 12px;border-top:1px solid var(--line);vertical-align:top;line-height:1.4}
+  .x tbody tr:first-child td{border-top:0}
+  .x td.tier b{display:block;font-size:14px;text-transform:uppercase}
+  .x td.tier small{display:block;color:var(--cool);font-weight:800;font-size:11px;margin-top:2px}
+  .x td.credit{font-weight:900;font-size:14px;white-space:nowrap}
+  .x td.credit small{display:block;color:var(--cool);font-weight:800;font-size:10px;text-transform:uppercase;margin-top:2px}
+  .x tr.me td{background:var(--mint)}
+  .x tr.me td:first-child{box-shadow:inset 5px 0 0 var(--black)}
+  .me-tag{display:inline-block;margin-top:6px;font-size:10px;font-weight:900;padding:3px 8px;border-radius:999px;background:var(--black);color:var(--green);text-transform:uppercase}
+  .me-tag[hidden]{display:none}
+  .band-tag{display:inline-block;font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px;background:#E4E6E1;text-transform:uppercase;white-space:nowrap}
+  .band-tag.strategic{background:var(--black);color:var(--green)}
+  .x-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:16px}
+  .x-card{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#fff;min-width:0}
+  .x-card h3{margin:0 0 8px;font-size:15px;text-transform:uppercase}
+  .x-list{list-style:none;padding:0;margin:0;font-size:12.5px;line-height:1.35}
+  .x-list li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line)}
+  .x-list li:first-child{border-top:0}
+  .x-list li span:last-child{color:var(--cool);font-weight:800;text-align:right}
+  .x-stack li{display:block}
+  .x-stack li b{display:block}
+  .x-stack li span{display:block;color:var(--cool);text-align:left !important;font-weight:700 !important}
+  .x-rules{margin-top:16px;background:var(--black);color:#fff;border-radius:12px;padding:18px 22px}
+  .x-rules h3{margin:0 0 8px;color:var(--green);font-size:15px;text-transform:uppercase}
+  .x-rules ul{display:grid;grid-template-columns:1fr 1fr;gap:6px 28px;font-size:12.5px}
+
+  .toast{
+    position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
+    background:var(--black);color:#fff;
+    padding:12px 18px;border-radius:999px;
+    font-size:13px;font-weight:800;
+    opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;
+    max-width:calc(100vw - 32px);
+    z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.warn{background:var(--red)}
+
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .print-sheet{display:none}
+
+  @media (max-width:980px){
+    main{grid-template-columns:1fr}
+    .sticky{position:static}
+    .side{order:-1}
+  }
+  @media (max-width:760px){
+    header{display:block;padding:24px 16px}
+    h1{font-size:27px}
+    .subtitle{font-size:17px}
+    .tag{margin-top:16px;text-align:left}
+    .toolbar{padding:12px 16px}
+    .toolbar .spacer{display:none}
+    main{padding:20px 16px 32px}
+    .section{grid-template-columns:56px minmax(0,1fr);padding:16px}
+    .section > .rate, .section > .auto-score{grid-column:1 / -1}
+    .section .wide{grid-column:1 / -1}
+    .icon{width:50px;height:50px}
+    .icon svg{width:26px;height:26px}
+    .section h3{font-size:18px}
+    .segments{grid-template-columns:1fr 1fr}
+    .exchange{padding:20px 16px 32px}
+    .x-grid{grid-template-columns:1fr}
+    .x-rules ul{grid-template-columns:1fr}
+    .tabs{width:100%}
+    .tab{flex:1}
+    .checks, .deny-list, .grid3{grid-template-columns:1fr}
+    .band-strip{grid-template-columns:1fr 1fr}
+    .grid2{grid-template-columns:1fr}
+  }
+  @media (max-width:420px){
+    .segments{grid-template-columns:1fr}
+    .pill{margin:6px 0 0}
+  }
+
+  /* Print: one landscape page */
+  @page{size: Letter landscape; margin:.18in}
+  @media print{
+    *{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+    html, body{background:#fff}
+    .sheet, .toast{display:none !important}
+    .print-sheet{
+      display:block;
+      width:10.64in;
+      height:8.14in;
+      overflow:hidden;
+      border:1px solid var(--line);
+      font-family:Averta, Arial, Helvetica, sans-serif;
+    }
+    .print-sheet + .print-sheet{break-before:page;page-break-before:always}
+    .px-banner{border-radius:8px;padding:10px 14px;margin-bottom:10px;background:var(--soft);border:1px solid var(--line);font-size:10.5px;line-height:1.35}
+    .px-banner .x-who{font-size:8.5px;font-weight:900;text-transform:uppercase;letter-spacing:.03em}
+    .px-banner .x-who a{color:inherit}
+    .px-banner b{display:block;font-size:16px;text-transform:uppercase;margin:3px 0 2px}
+    .px-banner.go{background:var(--green);border-color:var(--green)}
+    .px-banner.review{background:#FFF3D1;border-color:var(--amber)}
+    .px-banner.pass{background:#4A4F55;border-color:#4A4F55;color:#fff}
+    .px-banner.deny{background:var(--red);border-color:var(--red);color:#fff}
+    .px-deal{border:1.5px solid var(--black);border-radius:8px;overflow:hidden;margin-bottom:10px}
+    .px-deal-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;background:var(--black);color:#fff;padding:8px 12px}
+    .px-deal-head b{font-size:15px;text-transform:uppercase;color:var(--green)}
+    .px-deal-head span{font-size:8.5px;font-weight:800;text-transform:uppercase}
+    .px-cells{display:grid;grid-template-columns:repeat(3,1fr)}
+    .px-cell{padding:9px 12px;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+    .px-cell:nth-child(1), .px-cell:nth-child(4){border-left:0}
+    .px-cell:nth-child(-n+3){border-top:0}
+    .px-cell.wide{grid-column:span 2}
+    .px-val{font-size:13px;font-weight:900;margin-top:3px;line-height:1.25}
+    .px-val small{display:block;font-size:8px;font-weight:700;color:var(--cool);margin-top:3px;line-height:1.3}
+    .px-note{font-size:10px;font-weight:800}
+    .px-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:10px}
+    .px-list{list-style:none;margin:0;padding:0;font-size:8.5px;line-height:1.3}
+    .px-list li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-top:1px solid var(--line)}
+    .px-list li:first-child{border-top:0}
+    .px-list li span:last-child{color:var(--cool);font-weight:800;text-align:right}
+    .px-rules li{display:block}
+    .p-head{display:grid;grid-template-columns:1fr auto;align-items:center;background:var(--black);color:#fff;padding:12px 18px}
+    .p-head h1{font-size:22px}
+    .p-head .p-sub{color:var(--green);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+    .p-tag{font-size:11px;font-weight:900;text-transform:uppercase;text-align:right}
+    .p-tag span{display:block;color:var(--green)}
+    .p-body{padding:10px 14px}
+    .p-top{display:grid;grid-template-columns:1fr 250px;gap:10px;margin-bottom:8px}
+    .p-card{border:1px solid var(--line);border-radius:8px;padding:8px 11px;background:#fff}
+    .p-card h2{font-size:11px;margin:0 0 6px}
+    .p-fields{display:grid;grid-template-columns:repeat(4,1fr);gap:6px 10px}
+    .p-label{font-size:7px;font-weight:900;text-transform:uppercase;color:var(--cool)}
+    .p-value a{color:inherit;text-decoration:underline}
+    .p-value{min-height:16px;border-bottom:1px solid var(--edge);font-size:10.5px;font-weight:800;padding-top:1px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+    .p-score{background:var(--black);color:#fff;border-color:var(--black)}
+    .p-score.denied{background:var(--red);border-color:var(--red)}
+    .p-score h2{color:#fff}
+    .p-score-main{font-size:32px;line-height:1;font-weight:900;text-align:right;color:var(--green)}
+    .p-score.denied .p-score-main{color:#fff}
+    .p-score-main small{font-size:14px;color:#fff}
+    .p-score-bonus{font-size:8px;font-weight:900;text-align:right;margin-top:4px;text-transform:uppercase}
+    .p-score-bonus b{font-size:16px;color:var(--green);margin-left:6px}
+    .p-score.denied .p-score-bonus b{color:#fff}
+    .p-verdict{margin-top:6px;padding:5px 8px;border-radius:6px;font-size:12px;font-weight:900;text-transform:uppercase;text-align:center;background:#33383D}
+    .p-verdict.go{background:var(--green);color:var(--black)}
+    .p-verdict.review{background:var(--amber);color:var(--black)}
+    .p-verdict.deny{background:#fff;color:var(--red)}
+    .p-grid{display:grid;grid-template-columns:1fr 280px;gap:10px}
+    .p-table{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+    .p-row{display:grid;grid-template-columns:1fr 56px 74px;gap:8px;align-items:center;border-top:1px solid var(--line);padding:7px 10px}
+    .p-row:first-child{border-top:0}
+    .p-row.p-pillar{padding:4px 10px;background:#FCFDF9}
+    .p-row.p-pillar h3{font-size:10px}
+    .p-row.p-pillar p{font-size:7.5px}
+    .p-row.p-pillar .p-pill{padding:2px 3px;font-size:9.5px}
+    .p-row h3{font-size:11.5px;margin:0 0 2px;text-transform:uppercase}
+    .p-row p{font-size:8px;line-height:1.25;margin:0;color:var(--cool)}
+    .p-pill{border:1px solid var(--edge);border-radius:999px;text-align:center;padding:4px 3px;font-size:10.5px;font-weight:900;background:#F7F9F3}
+    .p-points{text-align:right;font-size:12.5px;font-weight:900}
+    .p-points span{display:block;font-size:7px;color:var(--cool);text-transform:uppercase}
+    .p-side{display:grid;gap:7px;align-content:start}
+    .p-list{margin:0;padding:0;list-style:none}
+    .p-list li{font-size:8.2px;line-height:1.2;margin:0 0 3px;display:flex;gap:5px}
+    .p-check{width:10px;height:10px;border:1px solid var(--edge);display:inline-grid;place-items:center;font-size:8px;line-height:1;flex:0 0 10px}
+    .p-deny{background:#FFF7F7}
+    .p-deny .p-check{border-color:var(--red);color:var(--red)}
+    .p-notes{min-height:56px;max-height:92px;overflow:hidden;font-size:8.5px;line-height:1.25;white-space:pre-wrap}
+    .p-foot{margin-top:7px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--pale);color:var(--cool);font-size:7.5px;line-height:1.25}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <header>
+    <div>
+      <h1>Creator Boarding Check</h1>
+      <div class="subtitle">Creator Scorecard</div>
+    </div>
+    <div class="tag">More of what <span>matters.</span></div>
+  </header>
+
+  <div class="toolbar">
+    <div class="tabs" role="tablist" aria-label="Pages">
+      <button class="tab" type="button" role="tab" data-tab="score" aria-selected="true">Scorecard</button>
+      <button class="tab" type="button" role="tab" data-tab="exchange" aria-selected="false">Value Exchange</button>
+    </div>
+    <button class="btn score-only" type="button" data-action="new">+ New creator</button>
+    <span class="spacer"></span>
+    <button class="btn score-only" type="button" data-action="csv">Export CSV</button>
+    <button class="btn go" type="button" data-action="print">Print / Save PDF</button>
+  </div>
+
+  <main data-page="score">
+    <div>
+      <section class="panel">
+        <h2>Creator Details</h2>
+        <p>Instagram followers set the engagement tier. TikTok followers are for context.</p>
+        <div class="grid2">
+          <div class="field"><label for="ttHandle">TikTok handle</label><input id="ttHandle" data-field="ttHandle" type="text" placeholder="@handle or profile link" autocomplete="off"><a class="profile-link" id="ttLink" target="_blank" rel="noopener" hidden></a></div>
+          <div class="field"><label for="igHandle">Instagram handle</label><input id="igHandle" data-field="igHandle" type="text" placeholder="@handle or profile link" autocomplete="off"><a class="profile-link" id="igLink" target="_blank" rel="noopener" hidden></a></div>
+          <div class="field"><label for="ttFollowers">TikTok followers</label><input id="ttFollowers" data-field="ttFollowers" type="text" placeholder="e.g. 48,000 or 48K"></div>
+          <div class="field"><label for="igFollowers">Instagram followers <span class="req">· sets ER tier</span></label><input id="igFollowers" data-field="igFollowers" type="text" placeholder="e.g. 22,000 or 22K" inputmode="decimal"></div>
+        </div>
+        <div class="grid3">
+          <div class="field"><label for="location">Based in</label><input id="location" data-field="location" type="text" placeholder="City, province"></div>
+          <div class="field"><label for="reviewer">Reviewed by</label><input id="reviewer" data-field="reviewer" type="text" placeholder="Your name"></div>
+          <div class="field"><label for="date">Review date</label><input id="date" data-field="date" type="date"></div>
+        </div>
+      </section>
+
+      <section class="layout" id="scoreRows">
+        <!-- 1. Segment Match -->
+        <div class="section" data-row="segment">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="10" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+          <div>
+            <h3>1. Segment Match <span class="pill" data-weight-pill="segment"></span></h3>
+            <div class="question">Which Flair segments does their audience reach?</div>
+            <ul>
+              <li>Tick every segment their audience reaches</li>
+              <li>Check audience age and location in their analytics</li>
+              <li>The highest-ranked segment you tick sets the score</li>
+            </ul>
+          </div>
+          <div class="auto-score">
+            <div><span>Scored from</span><div class="seg-from" id="segFrom">Tick a segment</div></div>
+            <b data-points="segment">0</b>
+          </div>
+          <div class="wide">
+            <div class="segments" id="segments" role="group" aria-label="Main audience segment"></div>
+          </div>
+        </div>
+
+        <!-- 2. Brand & Trust Fit -->
+        <div class="section" data-row="brand">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path></svg></div>
+          <div>
+            <h3>2. Brand &amp; Trust Fit <span class="pill" data-weight-pill="brand"></span></h3>
+            <div class="question">Would they make Flair feel like the smart, trusted choice?</div>
+            <ul>
+              <li>Honest and transparent: you'd trust their recommendation</li>
+              <li>Talks value, not just cheap. "Smart choice" energy</li>
+              <li>Shows the experience and the moment, not the fare</li>
+              <li>Real Canadian stories and community connection</li>
+              <li>Wouldn't overpromise what Flair delivers</li>
+            </ul>
+          </div>
+          <div class="rate" data-rate-group="brand">
+            <div class="scale" role="group" aria-label="Brand and trust fit score"></div>
+            <div class="scale-legend"><span>Weak</span><span>Strong</span></div>
+            <div class="row-points"><span>Points</span><b data-points="brand">0</b></div>
+          </div>
+        </div>
+
+        <!-- 3. Content Quality -->
+        <div class="section" data-row="content">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m22 8-6 4 6 4V8Z"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect><path d="m7 2 2 4"></path><path d="m15 2-3 4"></path></svg></div>
+          <div>
+            <h3>3. Content Quality <span class="pill" data-weight-pill="content"></span></h3>
+            <div class="question">Do they create content people love to watch?</div>
+            <ul>
+              <li>Storytelling has hooks, pacing, and payoff</li>
+              <li>Original voice or perspective</li>
+              <li>Clear visuals, good audio, usable framing</li>
+              <li>Posts regularly and shows growth</li>
+            </ul>
+          </div>
+          <div class="rate" data-rate-group="content">
+            <div class="scale" role="group" aria-label="Content quality score"></div>
+            <div class="scale-legend"><span>Weak</span><span>Strong</span></div>
+            <div class="row-points"><span>Points</span><b data-points="content">0</b></div>
+          </div>
+        </div>
+
+        <!-- 4. Engagement -->
+        <div class="section" data-row="er">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 17h18"></path><path d="m6 13 4-4 4 4 5-7"></path><path d="M18 6h1v5"></path></svg></div>
+          <div>
+            <h3>4. Engagement <span class="pill" data-weight-pill="er"></span></h3>
+            <div class="question">Are people actually interacting with this creator?</div>
+            <ul>
+              <li>Scored on <b>Instagram</b>, against benchmarks for their follower size</li>
+              <li>The tier is set automatically from their Instagram followers</li>
+              <li>TikTok is context only. A strong TikTok earns a bonus</li>
+            </ul>
+          </div>
+          <div class="auto-score" id="erAuto" aria-live="polite">
+            <span id="erAutoLabel">Auto-score</span>
+            <b id="erAutoScore">- / 5</b>
+          </div>
+          <div class="wide">
+            <div class="platforms" id="platforms"></div>
+          </div>
+        </div>
+
+        <!-- 5. Risk & Safety -->
+        <div class="section risk" data-row="risk">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="m9 12 2 2 4-4"></path></svg></div>
+          <div>
+            <h3>5. Risk &amp; Safety <span class="pill" data-weight-pill="risk"></span></h3>
+            <div class="question">Is this a safe partnership for the brand?</div>
+            <ul>
+              <li>Discloses partnerships properly</li>
+              <li>No hateful, discriminatory, or harmful content</li>
+              <li>No active competitor partnership</li>
+              <li>No current reputation issue</li>
+            </ul>
+          </div>
+          <div class="rate" data-rate-group="risk">
+            <div class="scale" role="group" aria-label="Risk and safety score"></div>
+            <div class="scale-legend"><span>Risky</span><span>Safest</span></div>
+            <div class="row-points"><span>Points</span><b data-points="risk">0</b></div>
+          </div>
+        </div>
+
+        <!-- 6–9. Strategic pillars (built from CONFIG) -->
+        <div id="pillarRows"></div>
+
+        <!-- Bonus -->
+        <div class="section bonus" data-row="bonus">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 2 2.9 6 6.6.9-4.8 4.7 1.1 6.5L12 17l-5.8 3.1 1.1-6.5-4.8-4.7 6.6-.9L12 2Z"></path></svg></div>
+          <div>
+            <h3>Bonus Points <span class="pill" id="bonusPill"></span></h3>
+            <div class="question">Nice-to-have advantages, not required</div>
+          </div>
+          <div class="row-points"><span>Bonus</span><b id="bonusPoints">+0</b></div>
+          <div class="wide">
+            <div class="checks" id="bonusChecks"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel deny-panel">
+        <h2>Automatic Deny</h2>
+        <p>Do not proceed if any apply.</p>
+        <ul class="deny-list" id="denyList"></ul>
+      </section>
+
+      <section class="panel">
+        <h2><label for="notes">Notes</label></h2>
+        <textarea id="notes" data-field="notes" placeholder="Context, audience observations, content ideas, red flags to watch."></textarea>
+      </section>
+    </div>
+
+    <aside class="side">
+      <div class="sticky">
+        <section class="scorebox" id="scorebox" aria-live="polite">
+          <h2>Total Score</h2>
+          <div class="scoreline"><span id="total">0</span><small>/100</small></div>
+          <div class="bonusline">
+            <div><span id="bonus">+0</span><small>bonus</small></div>
+            <div><span id="totalWithBonus">0</span><small>with bonus</small></div>
+          </div>
+          <div class="rule"></div>
+          <div class="verdict" id="verdict">
+            <div class="v-label" id="verdictLabel">In progress</div>
+            <div class="v-note" id="verdictNote"></div>
+          </div>
+          <ul class="breakdown" id="breakdown"></ul>
+        </section>
+        <section class="checklist" id="checklist">
+          <h2>Still to score</h2>
+          <ul id="missingList"></ul>
+        </section>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Page 2: Value Exchange (built from CONFIG.exchange) -->
+  <section class="exchange" data-page="exchange" hidden>
+    <div class="x-intro">
+      <h2>Creator Value Exchange Matrix</h2>
+      <div class="x-sub">Starting negotiation guidelines | CAD</div>
+      <p>What Flair offers and what to expect back, by creator type. <b>No cash.</b> Each tier has two alternative offers: a <b>flight credit</b> value or <b>flights in exchange</b>. They aren’t automatically equal: confirmed tickets can feel worth more than credits with restrictions or expiry. Use it as a negotiating guide, not a rate card.</p>
+    </div>
+    <div class="x-banner" id="xBanner" aria-live="polite"></div>
+    <div class="table-wrap" id="xTable"></div>
+    <div class="x-grid">
+      <section class="x-card"><h3>Approval bands</h3><ul class="x-list" id="xApproval"></ul></section>
+      <section class="x-card"><h3>Partnership types</h3><ul class="x-list x-stack" id="xTypes"></ul></section>
+      <section class="x-card"><h3>Rights to negotiate</h3><ul class="x-list" id="xRights"></ul></section>
+    </div>
+    <section class="x-rules"><h3>Guiding principles</h3><ul id="xRules"></ul></section>
+    <p class="fineprint" id="xFoot"></p>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="print-sheet" aria-hidden="true">
+  <div class="p-head">
+    <div>
+      <h1>Creator Boarding Check</h1>
+      <div class="p-sub">Creator Scorecard</div>
+    </div>
+    <div class="p-tag">More of what <span>matters.</span></div>
+  </div>
+  <div class="p-body">
+    <div class="p-top">
+      <section class="p-card">
+        <h2>Creator Details</h2>
+        <div class="p-fields" id="pFields"></div>
+      </section>
+      <section class="p-card p-score" id="pScore">
+        <h2>Total Score</h2>
+        <div class="p-score-main"><span id="pTotal">0</span><small>/100</small></div>
+        <div class="p-score-bonus" id="pBonus"></div>
+        <div class="p-verdict" id="pVerdict"></div>
+      </section>
+    </div>
+    <div class="p-grid">
+      <section class="p-table" id="pRows"></section>
+      <aside class="p-side">
+        <section class="p-card"><h2>Bonus Points</h2><ul class="p-list" id="pBonusList"></ul></section>
+        <section class="p-card p-deny"><h2>Automatic Deny</h2><ul class="p-list" id="pDenyList"></ul></section>
+        <section class="p-card"><h2>Notes</h2><div class="p-notes" id="pNotes"></div></section>
+      </aside>
+    </div>
+    <div class="p-foot" id="pFoot"></div>
+  </div>
+</div>
+
+<!-- Scorecard PDF page 2: this creator's value exchange only -->
+<div class="print-sheet print-x" aria-hidden="true">
+  <div class="p-head">
+    <div>
+      <h1>Creator Value Exchange</h1>
+      <div class="p-sub">Starting negotiation guidelines | CAD</div>
+    </div>
+    <div class="p-tag">More of what <span>matters.</span></div>
+  </div>
+  <div class="p-body">
+    <div class="px-banner" id="pxBanner"></div>
+    <div id="pxDeal"></div>
+    <div class="px-grid">
+      <section class="p-card"><h2>Rights to negotiate</h2><ul class="px-list" id="pxRights"></ul></section>
+      <section class="p-card"><h2>Guiding principles</h2><ul class="px-list px-rules" id="pxRules"></ul></section>
+    </div>
+    <div class="p-foot" id="pxFoot"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- Scoring rules: edit here to refine ---------- */
+  var CONFIG = {
+    categories: [
+      {key:'segment', name:'Segment Match',     weight:20, short:'Highest-ranked Flair segment their audience reaches.'},
+      {key:'brand',   name:'Brand & Trust Fit', weight:20, short:'Honest, value not cheap, experience over fares, real Canadian stories.'},
+      {key:'content', name:'Content Quality',   weight:15, short:'Hooks and payoff, original voice, clean production, consistency.'},
+      {key:'er',      name:'Engagement',        weight:15, short:'Instagram ER against benchmarks for their follower tier.'},
+      {key:'risk',    name:'Risk & Safety',     weight:10, short:'Proper disclosure, no harmful content, no competitor deal, clean reputation.'},
+      {key:'p_safe',  name:'Operate Safely & Reliably',        weight:5, pillar:true, short:'Customers trust us to get them to what matters.'},
+      {key:'p_easy',  name:'Make Flair Easier & More Trusted', weight:5, pillar:true, short:'Making travel easier removes barriers between customers and the moments that matter.'},
+      {key:'p_grow',  name:'Grow Responsibly & Profitably',    weight:5, pillar:true, short:'Responsible growth funds future products and more routes for what matters to customers.'},
+      {key:'p_team',  name:'Build a Stronger Team & Business', weight:5, pillar:true, short:'Everything we do helps customers experience more of what matters to them.'}
+    ],
+    // Strategic pillar sections: what to look for in each creator.
+    pillars: {
+      p_safe: {
+        desc:'Customers trust us to get them to what matters.',
+        question:'Would their content reinforce Flair as safe and reliable?',
+        looks:['Shows real, on-time, smooth travel moments','Sets honest expectations: no overpromising','Calm, credible voice people trust'],
+        icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="M12 8v4"></path><path d="M12 16h.01"></path>'
+      },
+      p_easy: {
+        desc:'By making travel easier, we remove barriers between customers and the moments that matter.',
+        question:'Do they make flying Flair feel simple and trustworthy?',
+        looks:['Explains the how-to: booking, bags, fees, check-in','Transparent about what’s included and what isn’t','Turns travel friction into confidence'],
+        icon:'<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>'
+      },
+      p_grow: {
+        desc:'When we grow responsibly, we’re able to offer future products and more routes to support more of what matters to our customers.',
+        question:'Can they drive real bookings, route awareness or repeat travel?',
+        looks:['Audience can and will book Flair routes','Can spotlight new or growing routes and destinations','Drives action, not just views'],
+        icon:'<path d="M3 17l6-6 4 4 8-8"></path><path d="M14 7h7v7"></path>'
+      },
+      p_team: {
+        desc:'Everything we do directly helps customers experience more of what matters to them.',
+        question:'Would this partnership strengthen the brand and how we work?',
+        looks:['Easy to work with, reliable, on-brief and on-time','Could become a long-term ambassador','Content we can reuse across channels'],
+        icon:'<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="10" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>'
+      }
+    },
+    // Ranked order. Each card's score is out of 5; the highest ticked card sets Segment Match.
+    segments: [
+      {id:'family',   name:'Smart Family Planners',         age:'35–55', desc:'Family decision makers.', score:5},
+      {id:'vfr',      name:'Connected Canadians (VFR)',     age:'35–55', desc:'Visiting friends and relatives. High repeat purchase potential.', score:5},
+      {id:'couples',  name:'Experience-Driven Couples',     age:'40–55', desc:'Weekend escapes and vacation travel.', score:4},
+      {id:'value',    name:'Value-Conscious Professionals', age:'35–45', desc:'Smart travellers who don’t need luxury.', score:4},
+      {id:'snowbirds',name:'Snowbirds & Empty Nesters',     age:'50–65', desc:'Higher disposable income, flexible, frequent vacationers.', score:4},
+      {id:'nextgen',  name:'Next-Gen Explorers',            age:'18–34', desc:'Future loyal customers. Spontaneous, social-first travel.', score:3}
+    ],
+    // Instagram ER benchmarks by follower tier. avg/good/amazing are where each band starts (ER %); below avg is Bad.
+    igTiers: [
+      {id:'nano',  name:'Nano',         range:'Under 10K', below:10000,    avg:2.0, good:4.0, amazing:6.0},
+      {id:'micro', name:'Micro',        range:'10K–50K',   below:50000,    avg:0.8, good:2.0, amazing:3.5},
+      {id:'mid',   name:'Mid-Macro',    range:'50K–500K',  below:500000,   avg:0.5, good:1.4, amazing:2.5},
+      {id:'mega',  name:'Mega / Celeb', range:'500K+',     below:Infinity, avg:0.3, good:0.9, amazing:1.5}
+    ],
+    erBands: [
+      {id:'bad',     label:'Bad',     score:1},
+      {id:'avg',     label:'Average', score:3},
+      {id:'good',    label:'Good',    score:4},
+      {id:'amazing', label:'Amazing', score:5}
+    ],
+    bonusEach: 2,
+    bonusCap: 14,  // 7 boxes x 2
+    bonus: [
+      {id:'organic',   label:'Already flies Flair or mentioned us organically'},
+      {id:'hub',       label:'Lives in a hub city or high-opportunity market'},
+      {id:'bilingual', label:'Creates content in English and French'},
+      {id:'overdeliver',label:'Track record of over-delivering for brands'},
+      {id:'visual',    label:'Strong photographer or videographer'},
+      {id:'family',    label:'Tells family or visiting-friends-and-relatives stories'},
+      {id:'tiktok',    label:'Strong TikTok presence'}
+    ],
+    deny: [
+      {id:'hate',       label:'History of hate speech or discrimination'},
+      {id:'competitor', label:'Active partnership with a competitor airline'},
+      {id:'controversy',label:'Recent controversy or reputation issue'},
+      {id:'fake',       label:'Bought followers or suspicious activity'},
+      {id:'farehack',   label:'Content led by fare hacks or “cheapest flight” messaging'}
+    ],
+    thresholds: {go:70, review:55},
+
+    // Page 2: Value Exchange. Flight credits or flights only, no cash. Draft negotiation targets (CAD).
+    exchange: {
+      // Two alternative offers per tier: a flight credit value, or flights in exchange. Not automatically equal.
+      // Start at the opening value; move toward the ceiling only when audience and creative justify it.
+      tiers: [
+        {name:'Nano',         range:'Under 10K',  below:10000,    open:200,  ceiling:350,   flights:'1 round trip', band:'Entry',            deliver:'1 Reel/TikTok + 3–4 Story frames',                                   note:'Keep exchanges simple. Focus on authentic storytelling and local relevance.'},
+        {name:'Micro',        range:'10K–50K',    below:50000,    open:350,  ceiling:750,   flights:'1 round trip, companion negotiable', band:'Entry',            deliver:'2–3 Reels/TikToks + 4–6 Story frames',                                    note:'Prioritize content quality and Canadian audience concentration over follower count.'},
+        {name:'Emerging mid', range:'50K–150K',   below:150000,   open:750,  ceiling:1500,  flights:'1–2 round trips', band:'Entry → Standard', deliver:'3–4 Reels/TikToks + 6–8 Story frames',                                      note:'Request average Reel views and Canadian audience % before increasing the offer.'},
+        {name:'Mid-tier',     range:'150K–250K',  below:250000,   open:1500, ceiling:2500,  flights:'2 round trips', band:'Standard',         deliver:'4–5 premium Reels/TikToks + 8–10 Story frames',                            note:'Tie deliverables to a specific destination, route or campaign. Negotiate organic repost rights.'},
+        {name:'Large',        range:'250K–500K',  below:500000,   open:2500, ceiling:5000,  flights:'2–3 round trips', band:'Premium',          deliver:'5–7 premium Reels/TikToks + 10–12 Story frames',                             note:'Require performance history, relevant Canadian reach and a clear business case.'},
+        {name:'Mega',         range:'500K+',      below:Infinity, open:5000, ceiling:7500,  flights:'Negotiated multi-trip exchange', band:'Strategic',        deliver:'Negotiated individually, starting from 7+ Reels/TikToks + Story sequences + performance report', note:'Lead with a longer-term travel relationship rather than the face value of credits.'},
+        {name:'Exceptional',  range:'Large / mega, proven performance', exceptional:true, open:0, ceiling:10000, flights:'Custom multi-trip arrangement', band:'Exceptional', deliver:'Negotiated individually, starting from 10+ Reels/TikToks over a multi-month series + guaranteed reporting', note:'Reserve $10K for demonstrably valuable partnerships with senior approval.'}
+      ],
+      approval: [
+        {name:'Entry',       range:'Up to $750',      note:'Everyday exchange'},
+        {name:'Standard',    range:'$751–$2,500',     note:'Standard partnership'},
+        {name:'Premium',     range:'$2,501–$5,000',   note:'Business case required'},
+        {name:'Strategic',   range:'$5,001–$7,500',   note:'Business case required', strategic:true},
+        {name:'Exceptional', range:'$7,501–$10,000',  note:'Business case + senior approval', strategic:true}
+      ],
+      types: [
+        ['Gifted travel', 'Flair provides a flight with no required content. Any coverage must still disclose the connection.'],
+        ['Flight credit exchange', 'A set credit value in return for defined deliverables, publishing dates and rights.'],
+        ['Flights in exchange', 'Confirmed round trips in return for an agreed content package. Companion tickets are negotiable.']
+      ],
+      rights: [
+        ['Creator posts on own channels', 'Included'],
+        ['Flair organic repost', 'Request 6–12 months'],
+        ['Substantial edits on Flair channels', 'Separate agreement'],
+        ['Paid usage / Spark ads', 'Negotiate separately'],
+        ['Raw footage', 'Negotiate separately'],
+        ['Airline exclusivity', 'Negotiate separately']
+      ],
+      // Guiding principles: [label, text]
+      rules: [
+        ['Starting point, not a fixed exchange', 'Deliverables represent Flair’s initial negotiation position, not contractual minimums.'],
+        ['Flexibility', 'Final compensation and deliverables depend on audience relevance, engagement, content quality, and campaign objectives.'],
+        ['Value over volume', 'A smaller package from a highly relevant creator may be worth more than additional content from a less suitable creator.'],
+        ['Non-cash compensation only', 'Partnerships use Flair flight credits or flights in exchange.'],
+        ['Approval thresholds', 'Credit ceilings guide internal approval. They are not amounts that should automatically be offered.'],
+        ['Exceptional partnerships', 'The $10,000 credit ceiling remains firm, with a business case and senior approval required.'],
+        ['Disclosure is mandatory', 'Free flights and credits are a material connection under Competition Bureau Canada guidance.']
+      ]
+    }
+  };
+
+  var PLATFORMS = {
+    tiktok: {
+      label:'TikTok', basis:'views',
+      help:'Open their last 10 to 15 videos. Average each number and skip outliers.',
+      formula:'(likes + comments + shares + saves) / views × 100',
+      fields:[['likes','Avg likes','9500'],['comments','Avg comments','140'],['shares','Avg shares','420'],['saves','Avg saves','880'],['views','Avg views','180000']],
+      divisor:'views'
+    },
+    instagram: {
+      label:'Instagram', basis:'followers',
+      help:'Use recent posts or creator-shared analytics. Add saves and shares when you have them. Followers come from Creator Details.',
+      formula:'(likes + comments + saves + shares) / followers × 100',
+      fields:[['likes','Avg likes','1200'],['comments','Avg comments','85'],['saves','Avg saves','300'],['shares','Avg shares','150']],
+      divisor:null // uses Instagram followers from Creator Details
+    }
+  };
+
+  var VERDICTS = {
+    deny:      {label:'Deny',          note:''},
+    incomplete:{label:'In progress',   note:'Finish scoring to see a verdict.'},
+    go:        {label:'Move forward',  note:''},
+    review:    {label:'Review',        note:'Close. Talk it through before moving forward.'},
+    pass:      {label:'Pass',          note:'Below the bar for now.'}
+  };
+
+  /* ---------- State ---------- */
+  var state = blankState();
+  var dirty = false;
+  var calcOpen = {tiktok:false, instagram:false};
+
+  function blankState(){
+    return {
+      id:null, ttHandle:'', igHandle:'', ttFollowers:'', igFollowers:'',
+      location:'', reviewer:'', date:today(),
+      segments:[],
+      ratings:{brand:0, content:0, risk:0, p_safe:0, p_easy:0, p_grow:0, p_team:0},
+      pillarNotes:{p_safe:'', p_easy:'', p_grow:'', p_team:''},
+      er:{tiktok:'', instagram:''},
+      calc:{
+        tiktok:{likes:'', comments:'', shares:'', saves:'', views:''},
+        instagram:{likes:'', comments:'', saves:'', shares:''}
+      },
+      bonus:[], deny:[], notes:'', savedAt:null
+    };
+  }
+
+  /* ---------- Helpers ---------- */
+  function $(id){ return document.getElementById(id); }
+  function pad(n){ return (n<10?'0':'')+n; }
+  function today(){ var d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function fmt(n){ return Math.round(n*10)/10 === Math.round(n) ? String(Math.round(n)) : (Math.round(n*10)/10).toFixed(1); }
+  function cat(key){ for(var i=0;i<CONFIG.categories.length;i++) if(CONFIG.categories[i].key===key) return CONFIG.categories[i]; return null; }
+  function seg(id){ for(var i=0;i<CONFIG.segments.length;i++) if(CONFIG.segments[i].id===id) return CONFIG.segments[i]; return null; }
+  function labelOf(list,id){ for(var i=0;i<list.length;i++) if(list[i].id===id) return list[i].label; return id; }
+  function toggleIn(arr,v,on){ var i=arr.indexOf(v); if(on && i<0) arr.push(v); if(!on && i>=0) arr.splice(i,1); }
+  function displayName(s){
+    var h=(s.ttHandle||'').trim() || (s.igHandle||'').trim();
+    return h || 'Unnamed creator';
+  }
+  // "48K", "1.2M", "34,000" -> number (null if unreadable)
+  function parseFollowers(v){
+    var m=String(v||'').replace(/[,\s]/g,'').match(/^(\d+(?:\.\d+)?)([km])?$/i);
+    if(!m) return null;
+    var n=parseFloat(m[1])*(m[2] ? (m[2].toLowerCase()==='m' ? 1e6 : 1e3) : 1);
+    return n>0 ? Math.round(n) : null;
+  }
+  // "@name", "name" or a pasted profile URL -> "name" (null if it doesn't look like a handle)
+  function handleOf(v){
+    var h=String(v||'').trim()
+      .replace(/^https?:\/\//i,'')
+      .replace(/^(www\.|m\.)?(instagram\.com|tiktok\.com)\//i,'')
+      .replace(/^@/,'')
+      .split(/[\/?#]/)[0];
+    return /^[A-Za-z0-9._]{1,30}$/.test(h) ? h : null;
+  }
+  function profileUrl(platform, name){
+    return platform==='instagram' ? 'https://www.instagram.com/'+name+'/' : 'https://www.tiktok.com/@'+name;
+  }
+  function shortNum(n){
+    if(n>=1e6) return fmt(n/1e6)+'M';
+    if(n>=1e3) return fmt(n/1e3)+'K';
+    return String(n);
+  }
+  function num(v){ var n=parseFloat(v); return v===''||v==null||isNaN(n) ? null : n; }
+  function tierFor(followers){
+    for(var i=0;i<CONFIG.igTiers.length;i++) if(followers<CONFIG.igTiers[i].below) return CONFIG.igTiers[i];
+    return null;
+  }
+  function band(id){ for(var i=0;i<CONFIG.erBands.length;i++) if(CONFIG.erBands[i].id===id) return CONFIG.erBands[i]; return null; }
+  function bandRange(tier, id){
+    if(id==='bad') return 'Under '+tier.avg+'%';
+    if(id==='avg') return tier.avg+'–'+tier.good+'%';
+    if(id==='good') return tier.good+'–'+tier.amazing+'%';
+    return tier.amazing+'%+';
+  }
+
+  /* ---------- Scoring ---------- */
+  function igResult(s){
+    var followers=parseFollowers(s.igFollowers), rate=num(s.er.instagram);
+    var tier=followers ? tierFor(followers) : null, b=null;
+    if(tier && rate!==null){
+      b=band(rate>=tier.amazing ? 'amazing' : rate>=tier.good ? 'good' : rate>=tier.avg ? 'avg' : 'bad');
+    }
+    return {followers:followers, tier:tier, rate:rate, band:b, score:b ? b.score : 0};
+  }
+
+  function compute(s){
+    var pts={};
+    var picked=CONFIG.segments.filter(function(x){ return s.segments.indexOf(x.id)>=0; });
+    var sg=null; // first max in rank order wins ties
+    picked.forEach(function(x){ if(!sg || x.score>sg.score) sg=x; });
+    pts.segment = sg ? cat('segment').weight*(sg.score/5) : 0;
+    var rated=CONFIG.categories.filter(function(k){ return k.key!=='segment' && k.key!=='er'; });
+    rated.forEach(function(k){
+      pts[k.key] = s.ratings[k.key] ? k.weight*(s.ratings[k.key]/5) : 0;
+    });
+
+    var ig=igResult(s);
+    pts.er = cat('er').weight*(ig.score/5);
+
+    var raw=0; CONFIG.categories.forEach(function(c){ raw+=pts[c.key]; });
+    var total=Math.round(raw);
+    var bonus=Math.min(CONFIG.bonusCap, s.bonus.length*CONFIG.bonusEach);
+
+    var reasons=[];
+    s.deny.forEach(function(id){ reasons.push(labelOf(CONFIG.deny,id)); });
+
+    var missing=[];
+    if(!(s.ttHandle||'').trim() && !(s.igHandle||'').trim()) missing.push('Creator handle');
+    if(!sg) missing.push('Audience segment');
+    if(!s.ratings.brand) missing.push('Brand & Trust Fit');
+    if(!s.ratings.content) missing.push('Content Quality');
+    if(!ig.followers) missing.push('Instagram followers');
+    if(ig.rate===null) missing.push('Instagram ER');
+    if(!s.ratings.risk) missing.push('Risk & Safety');
+    CONFIG.categories.forEach(function(k){ if(k.pillar && !s.ratings[k.key]) missing.push('Pillar: '+k.name); });
+
+    var verdict;
+    if(reasons.length) verdict='deny';
+    else if(missing.length) verdict='incomplete';
+    else if(total>=CONFIG.thresholds.go) verdict='go';
+    else if(total>=CONFIG.thresholds.review) verdict='review';
+    else verdict='pass';
+
+    return {pts:pts, ig:ig, ttRate:num(s.er.tiktok), total:total, bonus:bonus,
+            withBonus:total+bonus, reasons:reasons, denied:reasons.length>0, missing:missing,
+            verdict:verdict, segment:sg, picked:picked};
+  }
+
+  /* ---------- Build static pieces from CONFIG ---------- */
+  function build(){
+    var pillarCats=CONFIG.categories.filter(function(k){ return k.pillar; });
+    var pillarTotal=pillarCats.reduce(function(a,k){ return a+k.weight; },0);
+    $('pillarRows').innerHTML=
+      '<div class="group-head"><div><h3>Strategic Pillars</h3><p>How does this creator tie back to Flair’s four strategic pillars?</p></div><span class="pill">'+pillarTotal+' pts</span></div>'+
+      pillarCats.map(function(k,i){
+        var P=CONFIG.pillars[k.key];
+        return '<div class="section pillar" data-row="'+k.key+'">'+
+          '<div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24">'+P.icon+'</svg></div>'+
+          '<div>'+
+            '<h3>'+(6+i)+'. '+esc(k.name)+' <span class="pill" data-weight-pill="'+k.key+'"></span></h3>'+
+            '<p class="pillar-desc">'+esc(P.desc)+'</p>'+
+            '<div class="question">'+esc(P.question)+'</div>'+
+            '<ul>'+P.looks.map(function(l){ return '<li>'+esc(l)+'</li>'; }).join('')+'</ul>'+
+          '</div>'+
+          '<div class="rate" data-rate-group="'+k.key+'">'+
+            '<div class="scale" role="group" aria-label="'+esc(k.name)+' score"></div>'+
+            '<div class="scale-legend"><span>Weak</span><span>Strong</span></div>'+
+            '<div class="row-points"><span>Points</span><b data-points="'+k.key+'">0</b></div>'+
+          '</div>'+
+          '<div class="wide"><label class="pnote-label" for="pnote-'+k.key+'">How do they support it?</label>'+
+            '<input type="text" id="pnote-'+k.key+'" data-pnote="'+k.key+'" placeholder="One line, e.g. a past post or idea that shows it"></div>'+
+        '</div>';
+      }).join('');
+
+    document.querySelectorAll('[data-rate-group]').forEach(function(g){
+      var key=g.dataset.rateGroup, scale=g.querySelector('.scale');
+      for(var i=1;i<=5;i++){
+        var b=document.createElement('button');
+        b.type='button'; b.textContent=i;
+        b.dataset.rate=key; b.dataset.value=i;
+        b.setAttribute('aria-pressed','false');
+        scale.appendChild(b);
+      }
+    });
+    document.querySelectorAll('[data-weight-pill]').forEach(function(el){
+      el.textContent=cat(el.dataset.weightPill).weight+' pts';
+    });
+    $('bonusPill').textContent='+'+CONFIG.bonusEach+' each, max +'+CONFIG.bonusCap;
+
+    $('segments').innerHTML=CONFIG.segments.map(function(s){
+      var m='<span class="seg-mult s'+s.score+'">'+s.score+'/5 · '+fmt(cat('segment').weight*s.score/5)+' pts</span>';
+      return '<button type="button" class="seg" data-segment="'+s.id+'" aria-pressed="false">'+
+        '<span class="seg-name"><span>'+esc(s.name)+'</span><span class="seg-counts">Counts</span></span>'+
+        '<span class="seg-meta"><span class="seg-age">'+esc(s.age)+'</span>'+m+'</span>'+
+        '<span class="seg-desc">'+esc(s.desc)+'</span></button>';
+    }).join('');
+
+    $('platforms').innerHTML=['instagram','tiktok'].map(function(p){
+      var P=PLATFORMS[p], isIg=p==='instagram';
+      var fields=P.fields.map(function(f){
+        var id='calc-'+p+'-'+f[0];
+        return '<div><label for="'+id+'">'+f[1]+'</label><input id="'+id+'" type="text" inputmode="decimal" autocomplete="off" data-calc="'+p+'.'+f[0]+'" placeholder="'+f[2]+'"></div>';
+      }).join('');
+      var head=isIg
+        ? '<div class="plat-head"><div><b>Instagram</b><div class="plat-tag">Scored · ER by followers</div></div><span class="tier-badge" id="igTier">No tier yet</span></div>'+
+          '<p class="ig-meta" id="igMeta"></p>'
+        : '<div class="plat-head"><div><b>TikTok</b><div class="plat-tag">Context only · ER by views</div></div></div>'+
+          '<p class="ig-meta">Not scored. If their TikTok is strong, tick <b>Strong TikTok presence</b> in Bonus.</p>';
+      return '<div class="plat '+(isIg?'ig':'tt')+'" data-plat="'+p+'">'+head+
+        '<div class="errow"><label for="er-'+p+'">ER</label><input id="er-'+p+'" type="text" inputmode="decimal" autocomplete="off" data-er="'+p+'"><b>%</b></div>'+
+        (isIg ? '<div class="band-strip" id="igBands"></div>' : '')+
+        '<button class="linkbtn" type="button" data-calc-toggle="'+p+'">+ Calculate ER</button>'+
+        '<div class="calc-panel" id="calc-'+p+'" hidden>'+
+          '<p>'+P.help+'</p>'+
+          '<div class="calc-grid">'+fields+'</div>'+
+          '<div class="formula">'+P.formula+'</div>'+
+          '<div class="calc-result"><strong id="calcResult-'+p+'">-</strong><button class="usebtn" type="button" data-use-rate="'+p+'" disabled>Use this rate</button></div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+
+    $('bonusChecks').innerHTML=CONFIG.bonus.map(function(b){
+      return '<label><input type="checkbox" data-bonus="'+b.id+'"> '+esc(b.label)+'</label>';
+    }).join('');
+    $('denyList').innerHTML=CONFIG.deny.map(function(d){
+      return '<li><label><input type="checkbox" data-deny="'+d.id+'"> '+esc(d.label)+'</label></li>';
+    }).join('');
+
+    $('pFoot').textContent='Verdict: '+CONFIG.thresholds.go+'+ move forward, '+CONFIG.thresholds.review+'–'+(CONFIG.thresholds.go-1)+' review, under '+CONFIG.thresholds.review+' pass. Any automatic deny overrides the score. Weights: '+
+      CONFIG.categories.map(function(c){return c.name+' '+c.weight;}).join(', ')+'. Segment scores: '+
+      CONFIG.segments.map(function(s){return s.name+' '+s.score;}).join(', ')+'. Bonus +'+CONFIG.bonusEach+' each, up to +'+CONFIG.bonusCap+'.';
+  }
+
+  /* ---------- Calculator ---------- */
+  function calcRate(p){
+    var c=state.calc[p], P=PLATFORMS[p];
+    var base=P.divisor ? parseFloat(c[P.divisor]) : parseFollowers(state.igFollowers);
+    if(!(base>0)) return null;
+    var sum=0;
+    P.fields.forEach(function(f){ if(f[0]!==P.divisor){ var v=parseFloat(c[f[0]]); if(!isNaN(v)) sum+=v; } });
+    return Math.round(sum/base*1000)/10;
+  }
+
+  /* ---------- Render ---------- */
+  function setPressed(sel, fn){
+    document.querySelectorAll(sel).forEach(function(el){ el.setAttribute('aria-pressed', fn(el)?'true':'false'); });
+  }
+
+  function render(){
+    var c=compute(state);
+
+    setPressed('[data-rate]', function(b){ return state.ratings[b.dataset.rate]===Number(b.dataset.value); });
+    setPressed('[data-segment]', function(b){ return state.segments.indexOf(b.dataset.segment)>=0; });
+    document.querySelectorAll('[data-segment]').forEach(function(b){
+      b.classList.toggle('counts', !!c.segment && c.segment.id===b.dataset.segment && c.picked.length>1);
+    });
+    $('segFrom').textContent=c.segment ? c.segment.name+' ('+c.segment.score+'/5)' : 'Tick a segment';
+
+    document.querySelectorAll('[data-points]').forEach(function(el){
+      var k=el.dataset.points;
+      el.textContent=fmt(c.pts[k])+' / '+cat(k).weight;
+    });
+
+    ['tiktok','instagram'].forEach(function(p){
+      $('calc-'+p).hidden=!calcOpen[p];
+      document.querySelector('[data-calc-toggle="'+p+'"]').textContent=(calcOpen[p]?'−':'+')+' Calculate ER';
+      var cr=calcRate(p);
+      $('calcResult-'+p).textContent=cr===null ? '-' : cr+'%';
+      document.querySelector('[data-use-rate="'+p+'"]').disabled=cr===null;
+    });
+
+    var ig=c.ig;
+    $('erAutoLabel').textContent=ig.band ? 'Auto-score · '+ig.band.label : 'Auto-score';
+    $('erAutoScore').textContent=(ig.score ? ig.score : '-')+' / 5';
+    $('igTier').textContent=ig.tier ? ig.tier.name+' · '+ig.tier.range : 'No tier yet';
+    $('igTier').classList.toggle('on', !!ig.tier);
+    $('igMeta').innerHTML=ig.followers
+      ? esc(shortNum(ig.followers))+' followers'+(ig.rate!==null ? ' · '+ig.rate+'% ER' : ' · enter their ER')
+      : (String(state.igFollowers||'').trim() ? 'Can’t read that follower count. Try 34000, 34K or 1.2M.' : 'Add <b>Instagram followers</b> in Creator Details to set their tier.');
+    $('igBands').innerHTML=CONFIG.erBands.map(function(b){
+      var on=ig.band && ig.band.id===b.id;
+      return '<div class="band '+b.id+(on?' on':'')+'"><b>'+b.label+'</b>'+
+        '<small>'+(ig.tier ? bandRange(ig.tier,b.id) : '–')+'</small>'+
+        '<small>'+b.score+'/5 · '+fmt(cat('er').weight*b.score/5)+' pts</small></div>';
+    }).join('');
+
+    $('bonusPoints').textContent='+'+c.bonus;
+
+    // Score box
+    $('scorebox').classList.toggle('denied', c.denied);
+    $('total').textContent=c.denied ? 'DENY' : c.total;
+    $('bonus').textContent='+'+c.bonus;
+    $('totalWithBonus').textContent=c.denied ? '–' : c.withBonus;
+    var v=$('verdict');
+    v.className='verdict '+c.verdict;
+    $('verdictLabel').textContent=VERDICTS[c.verdict].label;
+    $('verdictNote').textContent=c.verdict==='deny' ? c.reasons.join(' · ') :
+      c.verdict==='go' ? 'Clears the '+CONFIG.thresholds.go+'-point bar with no deny flags.' : VERDICTS[c.verdict].note;
+    $('breakdown').innerHTML=CONFIG.categories.map(function(k){
+      return '<li><span>'+esc(k.name)+'</span><b>'+fmt(c.pts[k.key])+' / '+k.weight+'</b></li>';
+    }).join('');
+
+    $('missingList').innerHTML=c.missing.map(function(m){ return '<li>'+esc(m)+'</li>'; }).join('');
+    $('checklist').querySelector('h2').textContent=c.missing.length ? 'Still to score ('+c.missing.length+')' : 'All scored';
+    if(!c.missing.length) $('missingList').innerHTML='<p class="done">Every category is filled in.</p>';
+
+
+    [['instagram','igHandle','igLink'],['tiktok','ttHandle','ttLink']].forEach(function(x){
+      var h=handleOf(state[x[1]]), a=$(x[2]);
+      a.hidden=!h;
+      if(h){ a.href=profileUrl(x[0], h); a.textContent=a.href; }
+    });
+
+    renderPrint(c);
+    renderExchange(c);
+    renderPrintExchange(c);
+  }
+
+  function renderPrint(c){
+    var f=[['TikTok handle',state.ttHandle],['Instagram handle',state.igHandle],['TikTok followers',state.ttFollowers],['Instagram followers',state.igFollowers],
+           ['Based in',state.location],['Scored from segment',c.segment?c.segment.name:''],['Reviewed by',state.reviewer],['Review date',state.date]];
+    var links={'TikTok handle':['tiktok',state.ttHandle],'Instagram handle':['instagram',state.igHandle]};
+    $('pFields').innerHTML=f.map(function(x){
+      var l=links[x[0]], h=l ? handleOf(l[1]) : null;
+      var v=h ? '<a href="'+esc(profileUrl(l[0],h))+'">@'+esc(h)+'</a>' : esc(x[1]||'-');
+      return '<div><div class="p-label">'+x[0]+'</div><div class="p-value">'+v+'</div></div>';
+    }).join('');
+    $('pScore').classList.toggle('denied', c.denied);
+    $('pTotal').textContent=c.denied ? 'DENY' : c.total;
+    $('pBonus').innerHTML='<b>+'+c.bonus+'</b> bonus <b>'+(c.denied?'–':c.withBonus)+'</b> with bonus';
+    $('pVerdict').className='p-verdict '+c.verdict;
+    $('pVerdict').textContent=VERDICTS[c.verdict].label;
+
+    $('pRows').innerHTML=CONFIG.categories.map(function(k){
+      var score, note=k.short;
+      if(k.key==='er'){
+        var ig=c.ig;
+        score=ig.score ? ig.score+'/5' : '-/5';
+        if(ig.band) note='Instagram '+ig.rate+'% ER, '+shortNum(ig.followers)+' followers ('+ig.tier.name+'): '+ig.band.label+'.';
+        if(c.ttRate!==null) note+=' TikTok '+c.ttRate+'% ER (context).';
+      } else if(k.key==='segment'){
+        score=c.segment ? c.segment.score+'/5' : '-/5';
+        if(c.segment) note='Reaches: '+c.picked.map(function(x){return x.name;}).join(', ')+'. Scored from '+c.segment.name+'.';
+      } else {
+        score=state.ratings[k.key] ? state.ratings[k.key]+'/5' : '-/5';
+        if(k.pillar && (state.pillarNotes[k.key]||'').trim()) note=state.pillarNotes[k.key].trim();
+      }
+      return '<div class="p-row'+(k.pillar?' p-pillar':'')+'"><div><h3>'+esc(k.name)+'</h3><p>'+esc(note)+'</p></div>'+
+        '<div class="p-pill">'+score+'</div>'+
+        '<div class="p-points">'+fmt(c.pts[k.key])+'<span>of '+k.weight+'</span></div></div>';
+    }).join('');
+
+    $('pBonusList').innerHTML=CONFIG.bonus.map(function(b){
+      return '<li><span class="p-check">'+(state.bonus.indexOf(b.id)>=0?'✓':'')+'</span><span>'+esc(b.label)+'</span></li>';
+    }).join('');
+    $('pDenyList').innerHTML=CONFIG.deny.map(function(d){
+        return '<li><span class="p-check">'+(state.deny.indexOf(d.id)>=0?'✕':'')+'</span><span>'+esc(d.label)+'</span></li>';
+      }).join('');
+    $('pNotes').textContent=state.notes || ' ';
+  }
+
+  /* Push state into the form (used on load / new / open). */
+  function applyState(){
+    document.querySelectorAll('[data-field]').forEach(function(el){ el.value=state[el.dataset.field]||''; });
+    document.querySelectorAll('[data-er]').forEach(function(el){ el.value=state.er[el.dataset.er]||''; });
+    document.querySelectorAll('[data-calc]').forEach(function(el){ var p=el.dataset.calc.split('.'); el.value=state.calc[p[0]][p[1]]||''; });
+    document.querySelectorAll('[data-bonus]').forEach(function(el){ el.checked=state.bonus.indexOf(el.dataset.bonus)>=0; });
+    document.querySelectorAll('[data-deny]').forEach(function(el){ el.checked=state.deny.indexOf(el.dataset.deny)>=0; });
+    document.querySelectorAll('[data-pnote]').forEach(function(el){ el.value=state.pillarNotes[el.dataset.pnote]||''; });
+    render();
+  }
+
+  /* ---------- Events ---------- */
+  function onInput(e){
+    var t=e.target, d=t.dataset;
+    if(d.er || d.calc){
+      var clean=t.value.replace(/[^0-9.]/g,'').replace(/(\..*)\./g,'$1');
+      if(clean!==t.value) t.value=clean;
+    }
+    if(d.field!==undefined){
+      // Tidy follower counts once the field is left: 22k -> 22,000
+      if(e.type==='change' && (d.field==='igFollowers' || d.field==='ttFollowers')){
+        var n=parseFollowers(t.value);
+        if(n) t.value=n.toLocaleString('en-US');
+      }
+      // Tidy handles once the field is left: pasted profile link or "name" -> "@name"
+      if(e.type==='change' && (d.field==='igHandle' || d.field==='ttHandle')){
+        var h=handleOf(t.value);
+        if(h) t.value='@'+h;
+      }
+      state[d.field]=t.value;
+    }
+    else if(d.er) state.er[d.er]=t.value;
+    else if(d.calc){ var p=d.calc.split('.'); state.calc[p[0]][p[1]]=t.value; }
+    else if(d.pnote) state.pillarNotes[d.pnote]=t.value;
+    else if(d.bonus) toggleIn(state.bonus, d.bonus, t.checked);
+    else if(d.deny) toggleIn(state.deny, d.deny, t.checked);
+    else return;
+    dirty=true; render();
+  }
+  document.addEventListener('input', onInput);
+  document.addEventListener('change', onInput);
+
+  document.addEventListener('click', function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    var d=b.dataset;
+    if(d.tab){ setTab(d.tab); return; }
+    if(d.rate){
+      var v=Number(d.value);
+      state.ratings[d.rate]=state.ratings[d.rate]===v ? 0 : v; // click again to clear
+    }
+    else if(d.segment) toggleIn(state.segments, d.segment, state.segments.indexOf(d.segment)<0);
+    else if(d.calcToggle){ calcOpen[d.calcToggle]=!calcOpen[d.calcToggle]; render(); return; }
+    else if(d.useRate){
+      var r=calcRate(d.useRate); if(r===null) return;
+      state.er[d.useRate]=String(r);
+      $('er-'+d.useRate).value=r;
+    }
+    else if(d.action && actions[d.action]){ actions[d.action](b); return; }
+    else return;
+    dirty=true; render();
+  });
+
+  window.addEventListener('beforeunload', function(e){
+    if(dirty){ e.preventDefault(); e.returnValue=''; }
+  });
+  window.addEventListener('beforeprint', render);
+
+  /* ---------- Page 2: Value Exchange ---------- */
+  function money(n){ return '$'+n.toLocaleString('en-US'); }
+  function valueRange(t){ return t.open ? money(t.open)+' → '+money(t.ceiling) : 'Up to '+money(t.ceiling); }
+  function exchangeTierFor(followers){
+    var t=CONFIG.exchange.tiers;
+    for(var i=0;i<t.length;i++) if(!t[i].exceptional && followers<t[i].below) return i;
+    return -1;
+  }
+  function buildExchange(){
+    var X=CONFIG.exchange;
+    $('xTable').innerHTML='<table class="x"><thead><tr><th>Creator type</th><th>Flight credit (CAD)</th><th>Flights in exchange (starting offer)</th><th>Opening deliverable ask</th><th>Approval band</th><th>Negotiation notes</th></tr></thead><tbody>'+
+      X.tiers.map(function(t,i){
+        var strategic=/Strategic|Exceptional/.test(t.band);
+        return '<tr data-xtier="'+i+'">'+
+          '<td class="tier"><b>'+esc(t.name)+'</b><small>'+esc(t.range)+(t.exceptional?'':' IG followers')+'</small><span class="me-tag" hidden>This creator</span></td>'+
+          '<td class="credit">'+valueRange(t)+'<small>'+(t.open ? 'Open → ceiling' : 'Ceiling')+'</small></td>'+
+          '<td>'+esc(t.flights)+'</td>'+
+          '<td>'+esc(t.deliver)+'</td>'+
+          '<td><span class="band-tag'+(strategic?' strategic':'')+'">'+esc(t.band)+'</span></td>'+
+          '<td>'+esc(t.note)+'</td></tr>';
+      }).join('')+'</tbody></table>';
+    $('xApproval').innerHTML=X.approval.map(function(a){
+      return '<li><span><b>'+esc(a.name)+'</b><br>'+esc(a.range)+'</span><span>'+esc(a.note)+'</span></li>';
+    }).join('');
+    $('xTypes').innerHTML=X.types.map(function(t){ return '<li><b>'+esc(t[0])+'</b><span>'+esc(t[1])+'</span></li>'; }).join('');
+    $('xRights').innerHTML=X.rights.map(function(r){ return '<li><span>'+esc(r[0])+'</span><span>'+esc(r[1])+'</span></li>'; }).join('');
+    $('xRules').innerHTML=X.rules.map(function(r){ return '<li><b>'+esc(r[0])+':</b> '+esc(r[1])+'</li>'; }).join('');
+    $('xFoot').innerHTML='<b>Internal disclaimer.</b> This matrix serves as an internal starting point for negotiating creator partnerships. Flight credit values, flight arrangements, and content deliverables are indicative and subject to negotiation. Final agreements should reflect the creator’s audience quality, relevance to Flair’s target markets, demonstrated performance, and the specific objectives of the partnership. All partnerships remain subject to internal approval.';
+  }
+  // Verdict-based recommendation, shared by the Value Exchange tab and the scorecard PDF.
+  function exchangeAdvice(c){
+    var X=CONFIG.exchange, f=c.ig.followers, idx=f ? exchangeTierFor(f) : -1, t=idx>=0 ? X.tiers[idx] : null;
+    var who=esc(displayName(state))+(f ? ' · '+esc(shortNum(f))+' IG followers' : '');
+    var head, body, cls=c.verdict;
+    if(c.verdict==='deny'){ head='Deny · no offer'; body='Do not make an offer. '+esc(c.reasons.join(' · ')); }
+    else if(c.verdict==='pass'){ head='Pass · not recommended'; body='Scored '+c.total+'/100, below the '+CONFIG.thresholds.review+'-point bar. Not recommended for an offer right now.'; }
+    else if(c.verdict==='incomplete'){ head='Scorecard in progress'; body='Finish the scorecard to get a recommendation. The table works as a guide in the meantime.'; }
+    else if(c.verdict==='review'){ head='Review · start low'; body='Scored '+c.total+'/100. '+(t ? (t.open ? 'Open at '+money(t.open) : 'Start with gifted travel')+' and tie anything more to performance.' : 'Open at the low end of their tier and tie anything more to performance.'); }
+    else { head='Move forward · full range'; body='Scored '+c.total+'/100. '+(t ? 'Negotiate within '+valueRange(t)+' for a '+esc(t.name)+' creator.' : 'Negotiate within their tier’s range.'); }
+    if(!f) body+=' Add Instagram followers on the Scorecard to highlight their tier.';
+    return {tier:t, idx:idx, followers:f, who:who, head:head, body:body, cls:cls};
+  }
+  function renderExchange(c){
+    var idx=c.ig.followers ? exchangeTierFor(c.ig.followers) : -1;
+    document.querySelectorAll('[data-xtier]').forEach(function(row){
+      var on=Number(row.dataset.xtier)===idx;
+      row.classList.toggle('me', on);
+      row.querySelector('.me-tag').hidden=!on;
+    });
+    var a=exchangeAdvice(c);
+    $('xBanner').className='x-banner '+a.cls;
+    $('xBanner').innerHTML='<div class="x-who">'+a.who+'</div><b>'+a.head+'</b><span>'+a.body+'</span>';
+  }
+  function bandDetail(band){
+    return band.split(' → ').map(function(name){
+      var a=CONFIG.exchange.approval.filter(function(x){ return x.name===name; })[0];
+      return a ? a.name+' ('+a.range+'): '+a.note : name;
+    }).join(' · ');
+  }
+  // Page 2 of the scorecard PDF: only this creator's value exchange.
+  function renderPrintExchange(c){
+    var X=CONFIG.exchange, a=exchangeAdvice(c), t=a.tier;
+    var ig=handleOf(state.igHandle), tt=handleOf(state.ttHandle);
+    var name=ig ? '<a href="'+esc(profileUrl('instagram',ig))+'">@'+esc(ig)+'</a>'
+           : tt ? '<a href="'+esc(profileUrl('tiktok',tt))+'">@'+esc(tt)+'</a>' : esc(displayName(state));
+    var meta=[a.followers ? shortNum(a.followers)+' IG followers' : '', t ? t.name+' tier' : '',
+              c.verdict==='incomplete' ? 'Scorecard in progress' : (c.denied ? 'DENY' : c.total+'/100')+' · '+VERDICTS[c.verdict].label].filter(Boolean);
+    $('pxBanner').className='px-banner '+a.cls;
+    $('pxBanner').innerHTML='<div class="x-who">'+name+' · '+esc(meta.join(' · '))+'</div><b>'+a.head+'</b><span>'+a.body+'</span>';
+    var showDeal=t && c.verdict!=='pass' && c.verdict!=='deny';
+    $('pxDeal').innerHTML=!showDeal ? '' :
+      '<div class="px-deal">'+
+        '<div class="px-deal-head"><b>'+esc(t.name)+'</b><span>'+esc(t.range)+' IG followers · starting negotiation position</span></div>'+
+        '<div class="px-cells">'+
+          '<div class="px-cell"><div class="p-label">Flight credit (CAD)</div><div class="px-val">'+valueRange(t)+'<small>Start at the opening value.</small></div></div>'+
+          '<div class="px-cell"><div class="p-label">Flights in exchange (starting offer)</div><div class="px-val">'+esc(t.flights)+'<small>Alternative to the credit, not automatically equal.</small></div></div>'+
+          '<div class="px-cell"><div class="p-label">Approval band</div><div class="px-val">'+esc(t.band)+'<small>'+esc(bandDetail(t.band))+'</small></div></div>'+
+          '<div class="px-cell wide"><div class="p-label">Opening deliverable ask</div><div class="px-val">'+esc(t.deliver)+'</div></div>'+
+          '<div class="px-cell"><div class="p-label">Negotiation note</div><div class="px-val px-note">'+esc(t.note)+'</div></div>'+
+        '</div>'+
+      '</div>';
+    $('pxRights').innerHTML=X.rights.map(function(r){ return '<li><span>'+esc(r[0])+'</span><span>'+esc(r[1])+'</span></li>'; }).join('');
+    $('pxRules').innerHTML=X.rules.map(function(r){ return '<li><b>'+esc(r[0])+':</b> '+esc(r[1])+'</li>'; }).join('');
+    $('pxFoot').innerHTML=$('xFoot').innerHTML;
+  }
+
+  function setTab(tab){
+    document.querySelectorAll('[data-page]').forEach(function(p){ p.hidden=p.dataset.page!==tab; });
+    document.querySelectorAll('[data-tab]').forEach(function(b){ b.setAttribute('aria-selected', b.dataset.tab===tab ? 'true' : 'false'); });
+    document.body.classList.toggle('on-exchange', tab==='exchange');
+    window.scrollTo({top:0});
+  }
+
+  var actions={
+    new:function(){
+      if(dirty && !confirm('Start a new creator? This clears everything on the form.')) return;
+      state=blankState(); dirty=false; calcOpen={tiktok:false,instagram:false};
+      applyState(); window.scrollTo({top:0,behavior:'smooth'});
+      $('ttHandle').focus();
+    },
+    csv:exportCsv,
+    print:function(){ render(); window.print(); }
+  };
+
+  /* ---------- CSV ---------- */
+  function exportCsv(){
+    if(!state.ttHandle.trim() && !state.igHandle.trim()){
+      toast('Add a TikTok or Instagram handle before exporting.', true); $('ttHandle').focus(); return;
+    }
+    var head=['Creator','TikTok handle','Instagram handle','TikTok URL','Instagram URL','TikTok followers','Instagram followers','Based in','Reviewed by','Review date',
+      'Segments reached','Scored from segment','Segment score (1-5)','Segment pts','Brand & Trust (1-5)','Brand & Trust pts','Content (1-5)','Content pts',
+      'Instagram ER %','IG tier','IG band','ER score (1-5)','ER pts','TikTok ER % (context)','Risk & Safety (1-5)','Risk pts'].concat(
+      CONFIG.categories.filter(function(k){return k.pillar;}).reduce(function(a,k){ return a.concat([k.name+' (1-5)', k.name+' pts', k.name+' how']); },[]),[
+      'Core score','Bonus','Score with bonus','Bonus items','Deny reasons','Verdict','Notes']);
+    var r=state, c=compute(r);
+    var ttH=handleOf(r.ttHandle), igH=handleOf(r.igHandle);
+    var lines=[head, [displayName(r), r.ttHandle, r.igHandle, ttH?profileUrl('tiktok',ttH):'', igH?profileUrl('instagram',igH):'', r.ttFollowers, r.igFollowers, r.location, r.reviewer, r.date,
+        c.picked.map(function(p){return p.name;}).join('; '), c.segment?c.segment.name:'', c.segment?c.segment.score:'', fmt(c.pts.segment), r.ratings.brand||'', fmt(c.pts.brand),
+        r.ratings.content||'', fmt(c.pts.content), r.er.instagram, c.ig.tier?c.ig.tier.name:'', c.ig.band?c.ig.band.label:'', c.ig.score||'', fmt(c.pts.er), r.er.tiktok,
+        r.ratings.risk||'', fmt(c.pts.risk)].concat(
+        CONFIG.categories.filter(function(k){return k.pillar;}).reduce(function(a,k){ return a.concat([r.ratings[k.key]||'', fmt(c.pts[k.key]), r.pillarNotes[k.key]||'']); },[]),[
+        c.total, c.bonus, c.withBonus,
+        r.bonus.map(function(id){return labelOf(CONFIG.bonus,id);}).join('; '),
+        c.reasons.join('; '), VERDICTS[c.verdict].label, r.notes])];
+    var csv=lines.map(function(row){
+      return row.map(function(v){ v=String(v==null?'':v); return /[",\n\r]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }).join(',');
+    }).join('\r\n');
+    var blob=new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='flair-creator-'+displayName(state).replace(/[^\w-]+/g,'')+'-'+today()+'.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+    toast('Exported '+displayName(state)+'.');
+  }
+
+  /* ---------- Toast ---------- */
+  var toastTimer;
+  function toast(msg, warn){
+    var t=$('toast');
+    t.textContent=msg; t.classList.toggle('warn', !!warn); t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.classList.remove('show'); }, 2600);
+  }
+
+  build();
+  buildExchange();
+  applyState();
+})();
+</script>
+</body>
+</html>
