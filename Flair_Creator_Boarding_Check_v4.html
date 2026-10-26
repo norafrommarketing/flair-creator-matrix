@@ -375,7 +375,6 @@
   .tab{border:0;background:#fff;padding:9px 18px;font-size:13px;font-weight:900;white-space:nowrap}
   .tab + .tab{border-left:1px solid var(--black)}
   .tab[aria-selected=true]{background:var(--black);color:var(--green)}
-  body.on-exchange .score-only{display:none}
 
   /* Page 2: Value Exchange */
   .exchange{padding:28px 34px 40px}
@@ -575,9 +574,7 @@
       <button class="tab" type="button" role="tab" data-tab="score" aria-selected="true">Scorecard</button>
       <button class="tab" type="button" role="tab" data-tab="exchange" aria-selected="false">Value Exchange</button>
     </div>
-    <button class="btn score-only" type="button" data-action="new">+ New creator</button>
     <span class="spacer"></span>
-    <button class="btn score-only" type="button" data-action="csv">Export CSV</button>
     <button class="btn go" type="button" data-action="print">Print / Save PDF</button>
   </div>
 
@@ -1486,47 +1483,8 @@
   }
 
   var actions={
-    new:function(){
-      if(dirty && !confirm('Start a new creator? This clears everything on the form.')) return;
-      state=blankState(); dirty=false; calcOpen={tiktok:false,instagram:false};
-      applyState(); window.scrollTo({top:0,behavior:'smooth'});
-      $('ttHandle').focus();
-    },
-    csv:exportCsv,
     print:function(){ render(); window.print(); }
   };
-
-  /* ---------- CSV ---------- */
-  function exportCsv(){
-    if(!state.ttHandle.trim() && !state.igHandle.trim()){
-      toast('Add a TikTok or Instagram handle before exporting.', true); $('ttHandle').focus(); return;
-    }
-    var head=['Creator','TikTok handle','Instagram handle','TikTok URL','Instagram URL','TikTok followers','Instagram followers','Based in','Reviewed by','Review date',
-      'Segments reached','Scored from segment','Segment score (1-5)','Segment pts','Brand & Trust (1-5)','Brand & Trust pts','Content (1-5)','Content pts',
-      'Instagram ER %','IG tier','IG band','ER score (1-5)','ER pts','TikTok ER % (context)','Risk & Safety (1-5)','Risk pts'].concat(
-      CONFIG.categories.filter(function(k){return k.pillar;}).reduce(function(a,k){ return a.concat([k.name+' (1-5)', k.name+' pts', k.name+' how']); },[]),[
-      'Core score','Bonus','Score with bonus','Bonus items','Deny reasons','Verdict','Notes']);
-    var r=state, c=compute(r);
-    var ttH=handleOf(r.ttHandle), igH=handleOf(r.igHandle);
-    var lines=[head, [displayName(r), r.ttHandle, r.igHandle, ttH?profileUrl('tiktok',ttH):'', igH?profileUrl('instagram',igH):'', r.ttFollowers, r.igFollowers, r.location, r.reviewer, r.date,
-        c.picked.map(function(p){return p.name;}).join('; '), c.segment?c.segment.name:'', c.segment?c.segment.score:'', fmt(c.pts.segment), r.ratings.brand||'', fmt(c.pts.brand),
-        r.ratings.content||'', fmt(c.pts.content), r.er.instagram, c.ig.tier?c.ig.tier.name:'', c.ig.band?c.ig.band.label:'', c.ig.score||'', fmt(c.pts.er), r.er.tiktok,
-        r.ratings.risk||'', fmt(c.pts.risk)].concat(
-        CONFIG.categories.filter(function(k){return k.pillar;}).reduce(function(a,k){ return a.concat([r.ratings[k.key]||'', fmt(c.pts[k.key]), r.pillarNotes[k.key]||'']); },[]),[
-        c.total, c.bonus, c.withBonus,
-        r.bonus.map(function(id){return labelOf(CONFIG.bonus,id);}).join('; '),
-        c.reasons.join('; '), VERDICTS[c.verdict].label, r.notes])];
-    var csv=lines.map(function(row){
-      return row.map(function(v){ v=String(v==null?'':v); return /[",\n\r]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }).join(',');
-    }).join('\r\n');
-    var blob=new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
-    var a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
-    a.download='flair-creator-'+displayName(state).replace(/[^\w-]+/g,'')+'-'+today()+'.csv';
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
-    toast('Exported '+displayName(state)+'.');
-  }
 
   /* ---------- Toast ---------- */
   var toastTimer;
