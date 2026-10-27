@@ -412,6 +412,11 @@
   .x-list li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line)}
   .x-list li:first-child{border-top:0}
   .x-list li span:last-child{color:var(--cool);font-weight:800;text-align:right}
+  .x-list li.x-band{display:block}
+  .x-band-top{display:flex;justify-content:space-between;gap:10px}
+  .x-band-top span{font-weight:800;white-space:nowrap}
+  .x-band-sub{font-size:11.5px;color:var(--cool);font-weight:700;margin-top:2px}
+  .x-band-sub b{color:var(--black)}
   .x-stack li{display:block}
   .x-stack li b{display:block}
   .x-stack li span{display:block;color:var(--cool);text-align:left !important;font-weight:700 !important}
@@ -927,11 +932,12 @@
         {name:'Exceptional',  range:'Large / mega, proven performance', exceptional:true, open:0, ceiling:10000, flights:'Custom multi-trip arrangement', band:'Exceptional', deliver:'Negotiated individually, starting from 10+ Reels/TikToks over a multi-month series + guaranteed reporting', note:'Reserve $10K for demonstrably valuable partnerships with senior approval.'}
       ],
       approval: [
-        {name:'Entry',       range:'Up to $750',      note:'Everyday exchange'},
-        {name:'Standard',    range:'$751–$2,500',     note:'Standard partnership'},
-        {name:'Premium',     range:'$2,501–$5,000',   note:'Business case required'},
-        {name:'Strategic',   range:'$5,001–$7,500',   note:'Business case required', strategic:true},
-        {name:'Exceptional', range:'$7,501–$10,000',  note:'Business case + senior approval', strategic:true}
+        // note = what to submit for approval
+        {name:'Entry',       range:'Up to $750',      note:'Scorecard',                 approver:'Dylan Reeves-Wasik, VP Marketing'},
+        {name:'Standard',    range:'$751–$2,500',     note:'Scorecard',                 approver:'Dylan Reeves-Wasik, VP Marketing'},
+        {name:'Premium',     range:'$2,501–$5,000',   note:'Scorecard + business case', approver:'Dylan Reeves-Wasik, VP Marketing'},
+        {name:'Strategic',   range:'$5,001–$7,500',   note:'Scorecard + business case', approver:'Dylan Reeves-Wasik, VP Marketing', strategic:true},
+        {name:'Exceptional', range:'$7,501–$10,000',  note:'Scorecard + business case', approver:'Dylan Reeves-Wasik, VP Marketing + senior approval', strategic:true}
       ],
       types: [
         ['Gifted travel', 'Flair provides a flight with no required content. Any coverage must still disclose the connection.'],
@@ -1411,7 +1417,9 @@
           '<td>'+esc(t.note)+'</td></tr>';
       }).join('')+'</tbody></table>';
     $('xApproval').innerHTML=X.approval.map(function(a){
-      return '<li><span><b>'+esc(a.name)+'</b><br>'+esc(a.range)+'</span><span>'+esc(a.note)+'</span></li>';
+      return '<li class="x-band"><div class="x-band-top"><b>'+esc(a.name)+'</b><span>'+esc(a.range)+'</span></div>'+
+        '<div class="x-band-sub">Submit: <b>'+esc(a.note)+'</b></div>'+
+        '<div class="x-band-sub">Approver: '+esc(a.approver)+'</div></li>';
     }).join('');
     $('xTypes').innerHTML=X.types.map(function(t){ return '<li><b>'+esc(t[0])+'</b><span>'+esc(t[1])+'</span></li>'; }).join('');
     $('xRights').innerHTML=X.rights.map(function(r){ return '<li><span>'+esc(r[0])+'</span><span>'+esc(r[1])+'</span></li>'; }).join('');
@@ -1443,10 +1451,12 @@
     $('xBanner').innerHTML='<div class="x-who">'+a.who+'</div><b>'+a.head+'</b><span>'+a.body+'</span>';
   }
   function bandDetail(band){
-    return band.split(' → ').map(function(name){
-      var a=CONFIG.exchange.approval.filter(function(x){ return x.name===name; })[0];
-      return a ? a.name+' ('+a.range+'): '+a.note : name;
-    }).join(' · ');
+    var found=band.split(' → ').map(function(name){
+      return CONFIG.exchange.approval.filter(function(x){ return x.name===name; })[0] || {name:name, range:'', note:''};
+    });
+    var top=found[found.length-1];
+    return found.map(function(a){ return a.name+(a.range ? ' ('+a.range+'): '+a.note : ''); }).join(' · ')+
+      (top.approver ? ' · Approver: '+top.approver : '');
   }
   // Page 2 of the scorecard PDF: only this creator's value exchange.
   function renderPrintExchange(c){
