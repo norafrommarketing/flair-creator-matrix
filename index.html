@@ -522,7 +522,8 @@
     .px-rules li{display:block}
     .p-head{display:grid;grid-template-columns:1fr auto;align-items:center;background:var(--black);color:#fff;padding:12px 18px}
     .p-head h1{font-size:22px}
-    .p-head .p-sub{color:var(--green);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+    .p-head .p-sub{color:var(--green);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+    .p-creator{font-size:30px;line-height:1.05;font-weight:900;color:#fff;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:8.6in}
     .p-tag{font-size:11px;font-weight:900;text-transform:uppercase;text-align:right}
     .p-tag span{display:block;color:var(--green)}
     .p-body{padding:10px 14px}
@@ -804,8 +805,8 @@
 <div class="print-sheet" aria-hidden="true">
   <div class="p-head">
     <div>
-      <h1>Creator Boarding Check</h1>
-      <div class="p-sub">Creator Scorecard</div>
+      <div class="p-sub">Creator Boarding Check · Creator Scorecard</div>
+      <div class="p-creator" id="pCreatorName"></div>
     </div>
     <div class="p-tag">More of what <span>matters.</span></div>
   </div>
@@ -839,8 +840,8 @@
 <div class="print-sheet print-x" aria-hidden="true">
   <div class="p-head">
     <div>
-      <h1>Creator Value Exchange</h1>
-      <div class="p-sub">Starting negotiation guidelines | CAD</div>
+      <div class="p-sub">Creator Value Exchange · Starting negotiation guidelines | CAD</div>
+      <div class="p-creator" id="pxCreatorName"></div>
     </div>
     <div class="p-tag">More of what <span>matters.</span></div>
   </div>
@@ -1351,6 +1352,9 @@
     $('pDenyList').innerHTML=CONFIG.deny.map(function(d){
         return '<li><span class="p-check">'+(state.deny.indexOf(d.id)>=0?'✕':'')+'</span><span>'+esc(d.label)+'</span></li>';
       }).join('');
+    var headName=(handleOf(state.igHandle) ? '@'+handleOf(state.igHandle) : '') || (handleOf(state.ttHandle) ? '@'+handleOf(state.ttHandle) : '') || displayName(state);
+    $('pCreatorName').textContent=headName;
+    $('pxCreatorName').textContent=headName;
     $('pNotes').textContent=state.notes || ' ';
     $('pConsider').textContent=(state.considerations||'').trim() || 'None noted';
   }
