@@ -495,6 +495,18 @@
       font-family:Averta, Arial, Helvetica, sans-serif;
     }
     .print-sheet + .print-sheet{break-before:page;page-break-before:always}
+    .print-sheet.print-notes{height:auto;min-height:8.14in;overflow:visible}
+    .print-sheet.print-notes.is-empty{display:none !important}
+    .pn-sec{margin-bottom:12px;break-inside:avoid-page}
+    .pn-sec h2{font-size:12px;text-transform:uppercase;margin:0 0 6px}
+    .pn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .pn-card{border:1px solid var(--line);border-radius:8px;padding:8px 11px;background:#fff;break-inside:avoid}
+    .pn-top{display:flex;justify-content:space-between;gap:10px;margin-bottom:4px}
+    .pn-top b{font-size:11px;text-transform:uppercase}
+    .pn-top span{font-size:9.5px;font-weight:900;color:var(--cool);white-space:nowrap}
+    .pn-text{font-size:10px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
+    .pn-consider h2{color:var(--red)}
+    .pn-consider .pn-card{background:#FFF1F1;border-color:var(--red)}
     .px-banner{border-radius:8px;padding:10px 14px;margin-bottom:10px;background:var(--soft);border:1px solid var(--line);font-size:10.5px;line-height:1.35}
     .px-banner .x-who{font-size:8.5px;font-weight:900;text-transform:uppercase;letter-spacing:.03em}
     .px-banner .x-who a{color:inherit}
@@ -835,6 +847,18 @@
     </div>
     <div class="p-foot" id="pFoot"></div>
   </div>
+</div>
+
+<!-- Scorecard PDF: Reviewer notes in full (only printed when there are notes) -->
+<div class="print-sheet print-notes" id="pNotesSheet" aria-hidden="true">
+  <div class="p-head">
+    <div>
+      <div class="p-sub">Creator Boarding Check · Reviewer notes</div>
+      <div class="p-creator" id="pNotesCreatorName"></div>
+    </div>
+    <div class="p-tag">More of what <span>matters.</span></div>
+  </div>
+  <div class="p-body" id="pNotesBody"></div>
 </div>
 
 <!-- Scorecard PDF page 2: this creator's value exchange only -->
@@ -1318,6 +1342,7 @@
     });
 
     renderPrint(c);
+    renderPrintNotes(c);
     renderExchange(c);
     renderPrintExchange(c);
   }
@@ -1503,6 +1528,40 @@
     return found.map(function(a){ return a.name+(a.range ? ' ('+a.range+'): '+a.note : ''); }).join(' · ')+
       (top.approver ? ' · Approver: '+top.approver : '');
   }
+  // Reviewer notes page: every note in full, so nothing is cut off on page 1.
+  function renderPrintNotes(c){
+    var esc2=function(t){ return esc(t); };
+    var card=function(title, meta, text){
+      return '<div class="pn-card"><div class="pn-top"><b>'+esc2(title)+'</b><span>'+esc2(meta)+'</span></div><div class="pn-text">'+esc2(text)+'</div></div>';
+    };
+    var scoreCards=[], pillarCards=[];
+    CONFIG.categories.forEach(function(k){
+      var text, score;
+      if(k.pillar){
+        text=(state.pillarNotes[k.key]||'').trim();
+        score=state.ratings[k.key] ? state.ratings[k.key]+'/5' : '-/5';
+      } else {
+        text=((state.sectionNotes||{})[k.key]||'').trim();
+        score=k.key==='segment' ? (c.segment ? c.segment.score+'/5' : '-/5') : (state.ratings[k.key] ? state.ratings[k.key]+'/5' : '-/5');
+      }
+      if(!text) return;
+      (k.pillar ? pillarCards : scoreCards).push(card(k.name, score+' · '+fmt(c.pts[k.key])+' / '+k.weight, text));
+    });
+    var notes=(state.notes||'').trim(), cons=(state.considerations||'').trim();
+    var html='';
+    if(scoreCards.length) html+='<section class="pn-sec"><h2>Score notes</h2><div class="pn-grid">'+scoreCards.join('')+'</div></section>';
+    if(pillarCards.length) html+='<section class="pn-sec"><h2>Strategic pillars: how they support it</h2><div class="pn-grid">'+pillarCards.join('')+'</div></section>';
+    if(notes) html+='<section class="pn-sec"><h2>Notes</h2><div class="pn-card"><div class="pn-text">'+esc2(notes)+'</div></div></section>';
+    if(cons) html+='<section class="pn-sec pn-consider"><h2>Considerations</h2><div class="pn-card"><div class="pn-text">'+esc2(cons)+'</div></div></section>';
+    var has=!!html;
+    $('pNotesBody').innerHTML=html;
+    $('pNotesSheet').classList.toggle('is-empty', !has);
+    $('pNotesCreatorName').textContent=$('pCreatorName').textContent;
+    var foot=$('pFoot');
+    if(foot.dataset.base===undefined) foot.dataset.base=foot.textContent;
+    foot.textContent=foot.dataset.base+(has ? ' Full notes are on the Reviewer notes page.' : '');
+  }
+
   // Page 2 of the scorecard PDF: only this creator's value exchange.
   function renderPrintExchange(c){
     var X=CONFIG.exchange, a=exchangeAdvice(c), t=a.tier;
