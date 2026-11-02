@@ -1029,7 +1029,7 @@
       segments:[],
       ratings:{brand:0, content:0, risk:0, p_safe:0, p_easy:0, p_grow:0, p_team:0},
       pillarNotes:{p_safe:'', p_easy:'', p_grow:'', p_team:''},
-      sectionNotes:{segment:'', brand:'', content:'', er:'', risk:''},
+      sectionNotes:{segment:'', brand:'', content:'', risk:''},
       er:{tiktok:'', instagram:''},
       calc:{
         tiktok:{likes:'', comments:'', shares:'', saves:'', views:''},
@@ -1169,7 +1169,7 @@
         '</div>';
       }).join('');
 
-    ['segment','brand','content','er','risk'].forEach(function(k){
+    ['segment','brand','content','risk'].forEach(function(k){
       var w=document.createElement('div');
       w.className='wide';
       w.innerHTML='<label class="pnote-label" for="snote-'+k+'">Score notes</label>'+
