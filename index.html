@@ -606,6 +606,8 @@
       <button class="tab" type="button" role="tab" data-tab="exchange" aria-selected="false">Value Exchange</button>
     </div>
     <span class="spacer"></span>
+    <button class="btn" type="button" data-action="copyRow">Copy row</button>
+    <button class="btn" type="button" data-action="csv">Download CSV</button>
     <button class="btn go" type="button" data-action="print">Print / Save PDF</button>
   </div>
 
@@ -1600,8 +1602,109 @@
   }
 
   var actions={
-    print:function(){ render(); window.print(); }
+    print:function(){ render(); window.print(); },
+    copyRow:copyRow,
+    csv:downloadCsv
   };
+
+  /* ---------- Spreadsheet export ---------- */
+  // One column list shared by Copy row and Download CSV, so rows always line up in the sheet.
+  function exportColumns(){
+    var c=compute(state), a=exchangeAdvice(c), t=a.tier;
+    var igH=handleOf(state.igHandle), ttH=handleOf(state.ttHandle);
+    var bands=t ? t.band.split(' → ') : [];
+    var top=bands.length ? CONFIG.exchange.approval.filter(function(x){ return x.name===bands[bands.length-1]; })[0] : null;
+    var rate=function(k){ return state.ratings[k]||''; };
+    var sn=state.sectionNotes||{};
+    var pillars=CONFIG.categories.filter(function(k){ return k.pillar; });
+    var cols=[
+      ['Review date', state.date],
+      ['Reviewer', state.reviewer],
+      ['Creator', $('pCreatorName').textContent],
+      ['Instagram handle', igH ? '@'+igH : state.igHandle],
+      ['Instagram URL', igH ? profileUrl('instagram',igH) : ''],
+      ['TikTok handle', ttH ? '@'+ttH : state.ttHandle],
+      ['TikTok URL', ttH ? profileUrl('tiktok',ttH) : ''],
+      ['Instagram followers', c.ig.followers || state.igFollowers],
+      ['TikTok followers', state.ttFollowers],
+      ['Based in', state.location],
+      ['Segments reached', c.picked.map(function(x){ return x.name; }).join('; ')],
+      ['Scored from segment', c.segment ? c.segment.name : ''],
+      ['Segment score (1-5)', c.segment ? c.segment.score : ''],
+      ['Segment pts', fmt(c.pts.segment)],
+      ['Brand & Trust (1-5)', rate('brand')],
+      ['Brand & Trust pts', fmt(c.pts.brand)],
+      ['Content (1-5)', rate('content')],
+      ['Content pts', fmt(c.pts.content)],
+      ['Instagram ER %', state.er.instagram],
+      ['IG tier', c.ig.tier ? c.ig.tier.name : ''],
+      ['IG band', c.ig.band ? c.ig.band.label : ''],
+      ['ER score (1-5)', c.ig.score || ''],
+      ['ER pts', fmt(c.pts.er)],
+      ['TikTok ER % (context)', state.er.tiktok],
+      ['Risk & Safety (1-5)', rate('risk')],
+      ['Risk pts', fmt(c.pts.risk)]
+    ];
+    pillars.forEach(function(k){ cols.push([k.name+' (1-5)', rate(k.key)], [k.name+' pts', fmt(c.pts[k.key])]); });
+    cols.push(
+      ['Core score', c.denied ? 'DENY' : c.total],
+      ['Bonus', c.bonus],
+      ['Score with bonus', c.denied ? '' : c.withBonus],
+      ['Bonus items', state.bonus.map(function(id){ return labelOf(CONFIG.bonus,id); }).join('; ')],
+      ['Deny reasons', c.reasons.join('; ')],
+      ['Verdict', VERDICTS[c.verdict].label],
+      ['Recommendation', a.head],
+      ['Value exchange tier', t ? t.name : ''],
+      ['Flight credit range', t ? valueRange(t) : ''],
+      ['Flights in exchange', t ? t.flights : ''],
+      ['Opening deliverable ask', t ? t.deliver : ''],
+      ['Approval band', t ? t.band : ''],
+      ['Submit for approval', top ? top.note : ''],
+      ['Approver', top ? top.approver : ''],
+      ['Considerations', state.considerations],
+      ['Notes', state.notes],
+      ['Segment Match notes', sn.segment],
+      ['Brand & Trust notes', sn.brand],
+      ['Content Quality notes', sn.content],
+      ['Risk & Safety notes', sn.risk]
+    );
+    pillars.forEach(function(k){ cols.push([k.name+' – how they support it', state.pillarNotes[k.key]]); });
+    return cols;
+  }
+  function cellText(v){ return String(v==null ? '' : v).trim(); }
+  function copyText(text){
+    function fallback(){
+      var ta=document.createElement('textarea');
+      ta.value=text; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      var ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
+      ta.remove(); return ok;
+    }
+    if(navigator.clipboard && window.isSecureContext){
+      return navigator.clipboard.writeText(text).then(function(){ return true; }, function(){ return fallback(); });
+    }
+    return Promise.resolve(fallback());
+  }
+  // Tab-separated, no header: paste into the next empty row of the tracker.
+  function copyRow(){
+    var row=exportColumns().map(function(c){ return cellText(c[1]).replace(/[\t\r\n]+/g,' '); }).join('\t');
+    copyText(row).then(function(ok){
+      toast(ok ? 'Row copied. Paste into the next empty row of your sheet.' : 'Couldn’t copy here. Use Download CSV instead.', !ok);
+    });
+  }
+  // Header + this creator's row, for starting the sheet or keeping a backup.
+  function downloadCsv(){
+    var cols=exportColumns();
+    var q=function(v){ v=cellText(v); return /[",\n\r]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; };
+    var csv=cols.map(function(c){ return q(c[0]); }).join(',')+'\r\n'+cols.map(function(c){ return q(c[1]); }).join(',')+'\r\n';
+    var blob=new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='flair-creator-'+(displayName(state).replace(/[^\w.-]+/g,'') || 'creator')+'-'+today()+'.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+    toast('Downloaded CSV for '+displayName(state)+'.');
+  }
 
   /* ---------- Toast ---------- */
   var toastTimer;
