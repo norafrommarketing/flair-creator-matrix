@@ -389,11 +389,6 @@
   .ask-block{margin-top:6px;padding-top:14px;border-top:1px solid var(--line)}
   .ask-h{margin:0;font-size:15px;text-transform:uppercase}
   .ask-p{margin:2px 0 12px !important}
-  #askTripsField[hidden]{display:none}
-  .trip-row{display:flex;gap:10px;align-items:center}
-  .trip-row input[type=text]{max-width:90px}
-  .chk{display:flex;gap:6px;align-items:center;font-size:12.5px;font-weight:800;margin:0 !important;white-space:nowrap;cursor:pointer}
-  .chk input{width:16px;height:16px;accent-color:var(--black)}
   .expect{margin-top:4px;border:2px solid var(--black);border-radius:12px;padding:12px 14px;background:var(--mint)}
   .expect .ex-k{font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--cool)}
   .expect .ex-main{font-size:16px;font-weight:900;margin:3px 0 4px;line-height:1.3}
@@ -652,7 +647,7 @@
         <div class="ask-block">
           <h3 class="ask-h">Creator's ask</h3>
           <p class="ask-p">What are they asking for? This sets what we expect back and who approves it.</p>
-          <div class="grid3">
+          <div class="grid2">
             <div class="field"><label for="askType">Ask type</label>
               <select id="askType" data-field="askType">
                 <option value="none">Not discussed yet</option>
@@ -661,10 +656,6 @@
                 <option value="gifted">Gifted, no requirements</option>
               </select></div>
             <div class="field"><label for="askValue">Value (CAD)</label><input id="askValue" data-field="askValue" type="text" inputmode="decimal" placeholder="e.g. $500" autocomplete="off"></div>
-            <div class="field" id="askTripsField"><label for="askTrips">Round trips</label>
-              <div class="trip-row"><input id="askTrips" data-field="askTrips" type="text" inputmode="numeric" placeholder="e.g. 1" autocomplete="off">
-                <label class="chk"><input type="checkbox" id="askCompanion" data-field="askCompanion"> Companion</label></div>
-              <button type="button" class="linkbtn" data-action="estimateFare">Estimate value from round trips</button></div>
           </div>
           <div class="expect" id="expectCard" aria-live="polite"></div>
         </div>
@@ -1024,7 +1015,6 @@
         {name:'Mega',         range:'500K+',      below:Infinity, open:5000, ceiling:7500,  flights:'Negotiated multi-trip exchange', band:'Strategic',        deliver:'Negotiated individually: flagship Reels/TikToks + Story sequences + performance report', note:'Lead with a longer-term travel relationship rather than the face value of credits.'},
         {name:'Exceptional',  range:'Large / mega, proven performance', exceptional:true, open:0, ceiling:10000, flights:'Custom multi-trip arrangement', band:'Exceptional', deliver:'Negotiated individually: multi-month series with guaranteed deliverables + reporting', note:'Reserve $10K for demonstrably valuable partnerships with senior approval.'}
       ],
-      avgFare: 300, // default value per round-trip ticket, used by "Estimate value from round trips"
       approval: [
         // note = what to submit for approval; max = top of the band (CAD)
         {name:'Entry',       max:750, range:'Up to $750',      note:'Scorecard',                 approver:'Dylan Reeves-Wasik, VP Marketing'},
@@ -1105,7 +1095,7 @@
         instagram:{likes:'', comments:'', saves:'', shares:''}
       },
       bonus:[], deny:[], notes:'', considerations:'', savedAt:null,
-      askType:'none', askValue:'', askTrips:'', askCompanion:false
+      askType:'none', askValue:''
     };
   }
 
@@ -1481,7 +1471,6 @@
         var mv=parseMoney(t.value);
         if(mv) t.value='$'+mv.toLocaleString('en-US');
       }
-      if(d.field==='askTrips') t.value=t.value.replace(/[^0-9]/g,'');
       state[d.field]=t.type==='checkbox' ? t.checked : t.value;
     }
     else if(d.er) state.er[d.er]=t.value;
@@ -1608,7 +1597,6 @@
   }
   function renderExpectation(c){
     var e=expectation(c), box=$('expectCard');
-    $('askTripsField').hidden=(state.askType!=='flights');
     if(!e.basis){
       box.className='expect muted';
       box.innerHTML='<div class="ex-k">Expectation</div><div class="ex-sub">Enter their ask, or their Instagram followers, to see what we should expect back.</div>';
@@ -1708,7 +1696,6 @@
     var askBits=[];
     if(ex.basis==='Ask'){
       askBits.push(ex.label);
-      if(state.askType==='flights' && state.askTrips) askBits.push(state.askTrips+' round trip'+(state.askTrips==='1'?'':'s')+(state.askCompanion?' + companion':''));
     }
     var cells=[];
     if(ex.basis==='Ask'){
@@ -1741,14 +1728,6 @@
   var actions={
     print:function(){ render(); window.print(); },
     copyRow:copyRow,
-    estimateFare:function(){
-      var trips=parseInt(state.askTrips,10)||1;
-      var v=trips*(state.askCompanion ? 2 : 1)*CONFIG.exchange.avgFare;
-      if(!state.askTrips){ state.askTrips=String(trips); $('askTrips').value=state.askTrips; }
-      state.askValue='$'+v.toLocaleString('en-US'); $('askValue').value=state.askValue;
-      dirty=true; render();
-      toast('Estimated at '+money(CONFIG.exchange.avgFare)+' per ticket. Change the value if you know the fare.');
-    },
     csv:downloadCsv
   };
 
@@ -1799,8 +1778,6 @@
       ['Recommendation', a.head],
       ['Ask type', ({none:'Not discussed yet', credit:'Flight credit', flights:'Flights in exchange', gifted:'Gifted, no requirements'})[state.askType||'none']],
       ['Ask value (CAD)', ex.value || ''],
-      ['Round trips', state.askType==='flights' ? state.askTrips : ''],
-      ['Companion', state.askType==='flights' ? (state.askCompanion ? 'Yes' : 'No') : ''],
       ['Expectation basis', ex.basis],
       ['Expected deliverables', ex.deliver],
       ['Typical value range', t ? valueRange(t) : ''],
