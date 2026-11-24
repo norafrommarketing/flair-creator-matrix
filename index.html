@@ -386,6 +386,27 @@
   /* Page 2: Value Exchange */
   .exchange{padding:28px 34px 40px}
   .x-intro h2{font-size:22px;margin-bottom:2px}
+  .ask-block{margin-top:6px;padding-top:14px;border-top:1px solid var(--line)}
+  .ask-h{margin:0;font-size:15px;text-transform:uppercase}
+  .ask-p{margin:2px 0 12px !important}
+  #askTripsField[hidden]{display:none}
+  .trip-row{display:flex;gap:10px;align-items:center}
+  .trip-row input[type=text]{max-width:90px}
+  .chk{display:flex;gap:6px;align-items:center;font-size:12.5px;font-weight:800;margin:0 !important;white-space:nowrap;cursor:pointer}
+  .chk input{width:16px;height:16px;accent-color:var(--black)}
+  .rights-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .rights-row label{display:block;font-size:11px;font-weight:900;color:var(--cool);margin:0}
+  .rights-row select{margin-top:4px;padding:8px}
+  .expect{margin-top:4px;border:2px solid var(--black);border-radius:12px;padding:12px 14px;background:var(--mint)}
+  .expect .ex-k{font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--cool)}
+  .expect .ex-main{font-size:16px;font-weight:900;margin:3px 0 4px;line-height:1.3}
+  .expect .ex-sub{font-size:12.5px;font-weight:700;line-height:1.4}
+  .expect .ex-sub b{font-weight:900}
+  .xflag{margin-top:8px;padding:7px 10px;border-radius:8px;font-size:12px;font-weight:800;line-height:1.35}
+  .xflag.good{background:#E9FFD7;border:1px solid #7BC94C}
+  .xflag.warn{background:#FFF3D1;border:1px solid var(--amber)}
+  .xflag.bad{background:var(--red);color:#fff}
+  .expect.muted{background:var(--pale);border-color:var(--line)}
   .x-sub{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:#4C9F31;margin-bottom:8px}
   .x-rules li b{color:var(--green)}
   .x-intro p{margin:0;font-size:13px;line-height:1.45;color:var(--cool);max-width:760px}
@@ -474,6 +495,7 @@
     .checks, .deny-list, .grid3{grid-template-columns:1fr}
     .band-strip{grid-template-columns:1fr 1fr}
     .grid2{grid-template-columns:1fr}
+    .rights-row{grid-template-columns:1fr}
   }
   @media (max-width:420px){
     .segments{grid-template-columns:1fr}
@@ -533,6 +555,10 @@
     .px-list li:first-child{border-top:0}
     .px-list li span:last-child{color:var(--cool);font-weight:800;text-align:right}
     .px-rules li{display:block}
+    .px-flag{margin-top:8px;padding:6px 10px;border-radius:6px;font-size:9.5px;font-weight:800}
+    .px-flag.good{background:#E9FFD7;border:1px solid #7BC94C}
+    .px-flag.warn{background:#FFF3D1;border:1px solid var(--amber)}
+    .px-flag.bad{background:var(--red);color:#fff}
     .p-head{display:grid;grid-template-columns:1fr auto;align-items:center;background:var(--black);color:#fff;padding:12px 18px}
     .p-head h1{font-size:22px}
     .p-head .p-sub{color:var(--green);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
@@ -626,6 +652,34 @@
           <div class="field"><label for="location">Based in</label><input id="location" data-field="location" type="text" placeholder="City, province"></div>
           <div class="field"><label for="reviewer">Reviewed by</label><input id="reviewer" data-field="reviewer" type="text" placeholder="Your name"></div>
           <div class="field"><label for="date">Review date</label><input id="date" data-field="date" type="date"></div>
+        </div>
+        <div class="ask-block">
+          <h3 class="ask-h">Creator's ask</h3>
+          <p class="ask-p">What are they asking for? This sets what we expect back and who approves it.</p>
+          <div class="grid3">
+            <div class="field"><label for="askType">Ask type</label>
+              <select id="askType" data-field="askType">
+                <option value="none">Not discussed yet</option>
+                <option value="credit">Flight credit</option>
+                <option value="flights">Flights in exchange</option>
+                <option value="gifted">Gifted, no requirements</option>
+              </select></div>
+            <div class="field"><label for="askValue">Value (CAD)</label><input id="askValue" data-field="askValue" type="text" inputmode="decimal" placeholder="e.g. $500" autocomplete="off"></div>
+            <div class="field" id="askTripsField"><label for="askTrips">Round trips</label>
+              <div class="trip-row"><input id="askTrips" data-field="askTrips" type="text" inputmode="numeric" placeholder="e.g. 1" autocomplete="off">
+                <label class="chk"><input type="checkbox" id="askCompanion" data-field="askCompanion"> Companion</label></div>
+              <button type="button" class="linkbtn" data-action="estimateFare">Estimate value from round trips</button></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label for="askOffer">What they're offering</label><input id="askOffer" data-field="askOffer" type="text" placeholder="e.g. 1 Reel + Stories" autocomplete="off"></div>
+            <div class="field"><label>Rights they'll grant</label>
+              <div class="rights-row">
+                <label>Organic repost<select data-field="askRepost"><option value="">–</option><option>Yes</option><option>No</option><option>To negotiate</option></select></label>
+                <label>Paid usage<select data-field="askPaid"><option value="">–</option><option>Yes</option><option>No</option><option>To negotiate</option></select></label>
+                <label>Raw footage<select data-field="askRaw"><option value="">–</option><option>Yes</option><option>No</option><option>To negotiate</option></select></label>
+              </div></div>
+          </div>
+          <div class="expect" id="expectCard" aria-live="polite"></div>
         </div>
       </section>
 
@@ -983,13 +1037,14 @@
         {name:'Mega',         range:'500K+',      below:Infinity, open:5000, ceiling:7500,  flights:'Negotiated multi-trip exchange', band:'Strategic',        deliver:'Negotiated individually: flagship Reels/TikToks + Story sequences + performance report', note:'Lead with a longer-term travel relationship rather than the face value of credits.'},
         {name:'Exceptional',  range:'Large / mega, proven performance', exceptional:true, open:0, ceiling:10000, flights:'Custom multi-trip arrangement', band:'Exceptional', deliver:'Negotiated individually: multi-month series with guaranteed deliverables + reporting', note:'Reserve $10K for demonstrably valuable partnerships with senior approval.'}
       ],
+      avgFare: 300, // default value per round-trip ticket, used by "Estimate value from round trips"
       approval: [
-        // note = what to submit for approval
-        {name:'Entry',       range:'Up to $750',      note:'Scorecard',                 approver:'Dylan Reeves-Wasik, VP Marketing'},
-        {name:'Standard',    range:'$751–$2,500',     note:'Scorecard',                 approver:'Dylan Reeves-Wasik, VP Marketing'},
-        {name:'Premium',     range:'$2,501–$5,000',   note:'Scorecard + business case', approver:'Dylan Reeves-Wasik, VP Marketing'},
-        {name:'Strategic',   range:'$5,001–$7,500',   note:'Scorecard + business case', approver:'Dylan Reeves-Wasik, VP Marketing', strategic:true},
-        {name:'Exceptional', range:'$7,501–$10,000',  note:'Scorecard + business case', approver:'Dylan Reeves-Wasik, VP Marketing + senior approval', strategic:true}
+        // note = what to submit for approval; max = top of the band (CAD)
+        {name:'Entry',       max:750, range:'Up to $750',      note:'Scorecard',                 approver:'Dylan Reeves-Wasik, VP Marketing'},
+        {name:'Standard',    max:2500, range:'$751–$2,500',     note:'Scorecard',                 approver:'Dylan Reeves-Wasik, VP Marketing'},
+        {name:'Premium',     max:5000, range:'$2,501–$5,000',   note:'Scorecard + business case', approver:'Dylan Reeves-Wasik, VP Marketing'},
+        {name:'Strategic',   max:7500, range:'$5,001–$7,500',   note:'Scorecard + business case', approver:'Dylan Reeves-Wasik, VP Marketing', strategic:true},
+        {name:'Exceptional', max:10000, range:'$7,501–$10,000',  note:'Scorecard + business case', approver:'Dylan Reeves-Wasik, VP Marketing + senior approval', strategic:true}
       ],
       types: [
         ['Gifted travel', 'Flair provides a flight with no required content. Any coverage must still disclose the connection.'],
@@ -1062,7 +1117,8 @@
         tiktok:{likes:'', comments:'', shares:'', saves:'', views:''},
         instagram:{likes:'', comments:'', saves:'', shares:''}
       },
-      bonus:[], deny:[], notes:'', considerations:'', savedAt:null
+      bonus:[], deny:[], notes:'', considerations:'', savedAt:null,
+      askType:'none', askValue:'', askTrips:'', askCompanion:false, askOffer:'', askRepost:'', askPaid:'', askRaw:''
     };
   }
 
@@ -1346,6 +1402,7 @@
 
     renderPrint(c);
     renderPrintNotes(c);
+    renderExpectation(c);
     renderExchange(c);
     renderPrintExchange(c);
   }
@@ -1401,7 +1458,10 @@
 
   /* Push state into the form (used on load / new / open). */
   function applyState(){
-    document.querySelectorAll('[data-field]').forEach(function(el){ el.value=state[el.dataset.field]||''; });
+    document.querySelectorAll('[data-field]').forEach(function(el){
+      if(el.type==='checkbox') el.checked=!!state[el.dataset.field];
+      else el.value=state[el.dataset.field]||(el.dataset.field==='askType' ? 'none' : '');
+    });
     document.querySelectorAll('[data-er]').forEach(function(el){ el.value=state.er[el.dataset.er]||''; });
     document.querySelectorAll('[data-calc]').forEach(function(el){ var p=el.dataset.calc.split('.'); el.value=state.calc[p[0]][p[1]]||''; });
     document.querySelectorAll('[data-bonus]').forEach(function(el){ el.checked=state.bonus.indexOf(el.dataset.bonus)>=0; });
@@ -1429,7 +1489,13 @@
         var h=handleOf(t.value);
         if(h) t.value='@'+h;
       }
-      state[d.field]=t.value;
+      // Tidy the ask value once the field is left: 500 -> $500
+      if(e.type==='change' && d.field==='askValue'){
+        var mv=parseMoney(t.value);
+        if(mv) t.value='$'+mv.toLocaleString('en-US');
+      }
+      if(d.field==='askTrips') t.value=t.value.replace(/[^0-9]/g,'');
+      state[d.field]=t.type==='checkbox' ? t.checked : t.value;
     }
     else if(d.er) state.er[d.er]=t.value;
     else if(d.calc){ var p=d.calc.split('.'); state.calc[p[0]][p[1]]=t.value; }
@@ -1499,25 +1565,98 @@
     $('xRules').innerHTML=X.rules.map(function(r){ return '<li><b>'+esc(r[0])+':</b> '+esc(r[1])+'</li>'; }).join('');
     $('xFoot').innerHTML='<b>Internal disclaimer.</b> This matrix serves as an internal starting point for negotiating creator partnerships. Flight credit values, flight arrangements, and content deliverables are indicative and subject to negotiation. Final agreements should reflect the creator’s audience quality, relevance to Flair’s target markets, demonstrated performance, and the specific objectives of the partnership. All partnerships remain subject to internal approval.';
   }
+  /* ---------- Creator's ask -> expectation ---------- */
+  function parseMoney(v){ var n=parseFloat(String(v||'').replace(/[$,\s]/g,'')); return n>0 ? n : null; }
+  function approvalForAmount(v){
+    var a=CONFIG.exchange.approval;
+    for(var i=0;i<a.length;i++) if(v<=a[i].max) return a[i];
+    return null;
+  }
+  function approvalByName(name){ return CONFIG.exchange.approval.filter(function(x){ return x.name===name; })[0] || null; }
+  function tierIndexForValue(v){
+    var t=CONFIG.exchange.tiers;
+    for(var i=0;i<t.length;i++) if(!t[i].exceptional && v<=t[i].ceiling) return i;
+    for(var j=0;j<t.length;j++) if(t[j].exceptional && v<=t[j].ceiling) return j;
+    return -1;
+  }
+  // What Flair should get back, set by the creator's ask (or audience size until there is one). No tier names.
+  function expectation(c){
+    var X=CONFIG.exchange, type=state.askType||'none', val=parseMoney(state.askValue);
+    var fIdx=c.ig.followers ? exchangeTierFor(c.ig.followers) : -1, fTier=fIdx>=0 ? X.tiers[fIdx] : null;
+    var e={type:type, value:val, basis:'', idx:-1, tier:null, deliver:'', band:null, bandName:'', flags:[], label:''};
+    var kind=type==='flights' ? 'flights in exchange' : 'flight credit';
+    if(type==='gifted'){
+      e.basis='Ask'; e.label='Gifted travel'+(val ? ' ('+money(val)+')' : '');
+      e.deliver='No content required. Any coverage must still be disclosed.';
+      e.band=val ? approvalForAmount(val) : approvalByName('Entry'); e.bandName=e.band ? e.band.name : '';
+      return e;
+    }
+    if((type==='credit' || type==='flights') && val){
+      e.basis='Ask'; e.label=money(val)+' in '+kind;
+      if(val>10000){
+        e.flags.push({cls:'bad', text:'Above Flair’s $10,000 cap. This isn’t an offer we can make.'});
+        e.deliver='Over the cap. Negotiate down before going further.';
+        return e;
+      }
+      e.idx=tierIndexForValue(val); e.tier=X.tiers[e.idx];
+      e.band=approvalForAmount(val); e.bandName=e.band ? e.band.name : '';
+      e.deliver=e.tier.deliver;
+      if(fTier){
+        if(val>fTier.ceiling) e.flags.push({cls:'warn', text:'Above what their audience size usually supports (up to '+money(fTier.ceiling)+'). Negotiate down or prepare a business case.'});
+        else if(val<fTier.open) e.flags.push({cls:'good', text:'Strong-value deal for their reach. Their audience size usually supports '+valueRange(fTier)+'.'});
+      }
+      return e;
+    }
+    if(fTier){
+      e.basis='Audience size'; e.idx=fIdx; e.tier=fTier;
+      e.label='Based on audience size until an ask is entered';
+      e.deliver=fTier.deliver; e.bandName=fTier.band;
+      var names=fTier.band.split(' → '); e.band=approvalByName(names[names.length-1]);
+    }
+    return e;
+  }
+  function approvalLine(e){
+    if(!e.band) return '';
+    return e.bandName+' · Submit: '+e.band.note+' · Approver: '+e.band.approver;
+  }
+  function renderExpectation(c){
+    var e=expectation(c), box=$('expectCard');
+    $('askTripsField').hidden=(state.askType!=='flights');
+    if(!e.basis){
+      box.className='expect muted';
+      box.innerHTML='<div class="ex-k">Expectation</div><div class="ex-sub">Enter their ask, or their Instagram followers, to see what we should expect back.</div>';
+      return e;
+    }
+    box.className='expect';
+    var head=e.basis==='Ask' ? 'For '+esc(e.label)+', expect' : 'Expectation · '+esc(e.label);
+    var html='<div class="ex-k">'+head+'</div><div class="ex-main">'+esc(e.deliver)+'</div>';
+    if(e.tier && e.basis==='Audience size') html+='<div class="ex-sub">Typical value: <b>'+valueRange(e.tier)+'</b></div>';
+    if(e.band) html+='<div class="ex-sub">Approval: <b>'+esc(e.bandName)+'</b> · Submit '+esc(e.band.note.toLowerCase())+' · Approver: '+esc(e.band.approver)+'</div>';
+    e.flags.forEach(function(f){ html+='<div class="xflag '+f.cls+'">'+esc(f.text)+'</div>'; });
+    box.innerHTML=html;
+    return e;
+  }
+
   // Verdict-based recommendation, shared by the Value Exchange tab and the scorecard PDF.
   function exchangeAdvice(c){
-    var X=CONFIG.exchange, f=c.ig.followers, idx=f ? exchangeTierFor(f) : -1, t=idx>=0 ? X.tiers[idx] : null;
-    var who=esc(displayName(state))+(f ? ' · '+esc(shortNum(f))+' IG followers' : '');
+    var X=CONFIG.exchange, f=c.ig.followers, ex=expectation(c), idx=ex.idx, t=ex.tier;
+    var who=esc(displayName(state))+(f ? ' · '+esc(shortNum(f))+' IG followers' : '')+(ex.basis==='Ask' ? ' · Ask: '+esc(ex.label) : '');
     var head, body, cls=c.verdict;
     if(c.verdict==='deny'){ head='Deny · no offer'; body='Do not make an offer. '+esc(c.reasons.join(' · ')); }
     else if(c.verdict==='pass'){ head='Pass · not recommended'; body='Scored '+c.total+'/100, below the '+CONFIG.thresholds.review+'-point bar. Not recommended for an offer right now.'; }
     else if(c.verdict==='incomplete'){ head='Scorecard in progress'; body='Finish the scorecard to get a recommendation. The table works as a guide in the meantime.'; }
-    else if(c.verdict==='review'){ head='Review · start low'; body='Scored '+c.total+'/100. '+(t ? (t.open ? 'Open at '+money(t.open) : 'Start with gifted travel')+' and tie anything more to performance.' : 'Open at the low end of their tier and tie anything more to performance.'); }
-    else { head='Move forward · full range'; body='Scored '+c.total+'/100. '+(t ? 'Negotiate within '+valueRange(t)+' for a '+esc(t.name)+' creator.' : 'Negotiate within their tier’s range.'); }
-    if(!f) body+=' Add Instagram followers on the Scorecard to highlight their tier.';
-    return {tier:t, idx:idx, followers:f, who:who, head:head, body:body, cls:cls};
+    else if(c.verdict==='review'){ head='Review · start low'; body='Scored '+c.total+'/100. '+(ex.basis==='Ask' && t ? 'Expect '+esc(t.deliver)+' and tie anything more to performance.' : t ? (t.open ? 'Open at '+money(t.open) : 'Start with gifted travel')+' and tie anything more to performance.' : 'Open low and tie anything more to performance.'); }
+    else { head='Move forward · full range'; body='Scored '+c.total+'/100. '+(ex.basis==='Ask' && t ? 'Expect '+esc(t.deliver)+'.' : t ? 'Negotiate within '+valueRange(t)+'.' : ex.type==='gifted' ? 'Gifted travel: no content required.' : 'Enter their ask to see what to expect.'); }
+    if(!f && !ex.basis) body+=' Add their ask or Instagram followers on the Scorecard to see the expectation.';
+    return {tier:t, idx:idx, followers:f, who:who, head:head, body:body, cls:cls, ex:ex};
   }
   function renderExchange(c){
-    var idx=c.ig.followers ? exchangeTierFor(c.ig.followers) : -1;
+    var ex=expectation(c), idx=ex.idx;
     document.querySelectorAll('[data-xtier]').forEach(function(row){
       var on=Number(row.dataset.xtier)===idx;
       row.classList.toggle('me', on);
       row.querySelector('.me-tag').hidden=!on;
+      row.querySelector('.me-tag').textContent=ex.basis==='Ask' ? 'This deal' : 'This creator';
     });
     var a=exchangeAdvice(c);
     $('xBanner').className='x-banner '+a.cls;
@@ -1571,25 +1710,37 @@
     var ig=handleOf(state.igHandle), tt=handleOf(state.ttHandle);
     var name=ig ? '<a href="'+esc(profileUrl('instagram',ig))+'">@'+esc(ig)+'</a>'
            : tt ? '<a href="'+esc(profileUrl('tiktok',tt))+'">@'+esc(tt)+'</a>' : esc(displayName(state));
-    var meta=[a.followers ? shortNum(a.followers)+' IG followers' : '', t ? t.name+' tier' : '',
+    var meta=[a.followers ? shortNum(a.followers)+' IG followers' : '',
               c.verdict==='incomplete' ? 'Scorecard in progress' : (c.denied ? 'DENY' : c.total+'/100')+' · '+VERDICTS[c.verdict].label].filter(Boolean);
     $('pxBanner').className='px-banner '+a.cls;
     $('pxBanner').innerHTML='<div class="x-who">'+name+' · '+esc(meta.join(' · '))+'</div><b>'+a.head+'</b><span>'+a.body+'</span>';
     var cons=(state.considerations||'').trim();
     $('pxConsider').hidden=!cons;
     $('pxConsider').innerHTML=cons ? '<b>Considerations:</b> '+esc(cons) : '';
-    var showDeal=t && c.verdict!=='pass' && c.verdict!=='deny';
+    var ex=a.ex, showDeal=(t || ex.type==='gifted' || ex.flags.length) && c.verdict!=='pass' && c.verdict!=='deny';
+    var askBits=[];
+    if(ex.basis==='Ask'){
+      askBits.push(ex.label);
+      if(state.askType==='flights' && state.askTrips) askBits.push(state.askTrips+' round trip'+(state.askTrips==='1'?'':'s')+(state.askCompanion?' + companion':''));
+    }
+    var rights=[['Organic repost',state.askRepost],['Paid usage',state.askPaid],['Raw footage',state.askRaw]].filter(function(r){ return r[1]; })
+      .map(function(r){ return r[0]+': '+r[1]; }).join(' · ');
+    var cells=[];
+    if(ex.basis==='Ask'){
+      cells.push('<div class="px-cell"><div class="p-label">Creator’s ask</div><div class="px-val">'+esc(askBits.join(' · '))+'</div></div>');
+      cells.push('<div class="px-cell"><div class="p-label">What they’re offering</div><div class="px-val px-note">'+esc(state.askOffer||'-')+'</div></div>');
+    } else if(t){
+      cells.push('<div class="px-cell"><div class="p-label">Flight credit (CAD)</div><div class="px-val">'+valueRange(t)+'<small>Start at the opening value.</small></div></div>');
+      cells.push('<div class="px-cell"><div class="p-label">Flights in exchange (starting offer)</div><div class="px-val">'+esc(t.flights)+'<small>Alternative to the credit, not automatically equal.</small></div></div>');
+    }
+    cells.push('<div class="px-cell"><div class="p-label">Approval band</div><div class="px-val">'+esc(ex.bandName||'-')+'<small>'+esc(ex.band ? 'Submit: '+ex.band.note+' · Approver: '+ex.band.approver : '')+'</small></div></div>');
+    cells.push('<div class="px-cell wide"><div class="p-label">Expected deliverables</div><div class="px-val">'+esc(ex.deliver||'-')+'</div></div>');
+    cells.push('<div class="px-cell"><div class="p-label">'+(ex.basis==='Ask' ? 'Rights they’ll grant' : 'Negotiation note')+'</div><div class="px-val px-note">'+esc(ex.basis==='Ask' ? (rights||'Not discussed yet') : (t ? t.note : ''))+'</div></div>');
     $('pxDeal').innerHTML=!showDeal ? '' :
       '<div class="px-deal">'+
-        '<div class="px-deal-head"><b>'+esc(t.name)+'</b><span>'+esc(t.range)+' IG followers · starting negotiation position</span></div>'+
-        '<div class="px-cells">'+
-          '<div class="px-cell"><div class="p-label">Flight credit (CAD)</div><div class="px-val">'+valueRange(t)+'<small>Start at the opening value.</small></div></div>'+
-          '<div class="px-cell"><div class="p-label">Flights in exchange (starting offer)</div><div class="px-val">'+esc(t.flights)+'<small>Alternative to the credit, not automatically equal.</small></div></div>'+
-          '<div class="px-cell"><div class="p-label">Approval band</div><div class="px-val">'+esc(t.band)+'<small>'+esc(bandDetail(t.band))+'</small></div></div>'+
-          '<div class="px-cell wide"><div class="p-label">Opening deliverable ask</div><div class="px-val">'+esc(t.deliver)+'</div></div>'+
-          '<div class="px-cell"><div class="p-label">Negotiation note</div><div class="px-val px-note">'+esc(t.note)+'</div></div>'+
-        '</div>'+
-      '</div>';
+        '<div class="px-deal-head"><b>Expectation</b><span>'+esc(ex.basis==='Ask' ? 'For '+ex.label : ex.label)+'</span></div>'+
+        '<div class="px-cells">'+cells.join('')+'</div>'+
+      '</div>'+ex.flags.map(function(f){ return '<div class="px-flag '+f.cls+'">'+esc(f.text)+'</div>'; }).join('');
     $('pxRights').innerHTML=X.rights.map(function(r){ return '<li><span>'+esc(r[0])+'</span><span>'+esc(r[1])+'</span></li>'; }).join('');
     $('pxRules').innerHTML=X.rules.map(function(r){ return '<li><b>'+esc(r[0])+':</b> '+esc(r[1])+'</li>'; }).join('');
     $('pxFoot').innerHTML=$('xFoot').innerHTML;
@@ -1605,16 +1756,22 @@
   var actions={
     print:function(){ render(); window.print(); },
     copyRow:copyRow,
+    estimateFare:function(){
+      var trips=parseInt(state.askTrips,10)||1;
+      var v=trips*(state.askCompanion ? 2 : 1)*CONFIG.exchange.avgFare;
+      if(!state.askTrips){ state.askTrips=String(trips); $('askTrips').value=state.askTrips; }
+      state.askValue='$'+v.toLocaleString('en-US'); $('askValue').value=state.askValue;
+      dirty=true; render();
+      toast('Estimated at '+money(CONFIG.exchange.avgFare)+' per ticket. Change the value if you know the fare.');
+    },
     csv:downloadCsv
   };
 
   /* ---------- Spreadsheet export ---------- */
   // One column list shared by Copy row and Download CSV, so rows always line up in the sheet.
   function exportColumns(){
-    var c=compute(state), a=exchangeAdvice(c), t=a.tier;
+    var c=compute(state), a=exchangeAdvice(c), t=a.tier, ex=a.ex;
     var igH=handleOf(state.igHandle), ttH=handleOf(state.ttHandle);
-    var bands=t ? t.band.split(' → ') : [];
-    var top=bands.length ? CONFIG.exchange.approval.filter(function(x){ return x.name===bands[bands.length-1]; })[0] : null;
     var rate=function(k){ return state.ratings[k]||''; };
     var sn=state.sectionNotes||{};
     var pillars=CONFIG.categories.filter(function(k){ return k.pillar; });
@@ -1655,13 +1812,21 @@
       ['Deny reasons', c.reasons.join('; ')],
       ['Verdict', VERDICTS[c.verdict].label],
       ['Recommendation', a.head],
-      ['Value exchange tier', t ? t.name : ''],
-      ['Flight credit range', t ? valueRange(t) : ''],
-      ['Flights in exchange', t ? t.flights : ''],
-      ['Opening deliverable ask', t ? t.deliver : ''],
-      ['Approval band', t ? t.band : ''],
-      ['Submit for approval', top ? top.note : ''],
-      ['Approver', top ? top.approver : ''],
+      ['Ask type', ({none:'Not discussed yet', credit:'Flight credit', flights:'Flights in exchange', gifted:'Gifted, no requirements'})[state.askType||'none']],
+      ['Ask value (CAD)', ex.value || ''],
+      ['Round trips', state.askType==='flights' ? state.askTrips : ''],
+      ['Companion', state.askType==='flights' ? (state.askCompanion ? 'Yes' : 'No') : ''],
+      ['What they’re offering', state.askOffer],
+      ['Rights: organic repost', state.askRepost],
+      ['Rights: paid usage', state.askPaid],
+      ['Rights: raw footage', state.askRaw],
+      ['Expectation basis', ex.basis],
+      ['Expected deliverables', ex.deliver],
+      ['Typical value range', t ? valueRange(t) : ''],
+      ['Approval band', ex.bandName],
+      ['Submit for approval', ex.band ? ex.band.note : ''],
+      ['Approver', ex.band ? ex.band.approver : ''],
+      ['Expectation flag', ex.flags.map(function(f){ return f.text; }).join(' ')],
       ['Considerations', state.considerations],
       ['Notes', state.notes],
       ['Segment Match notes', sn.segment],
